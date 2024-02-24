@@ -9,12 +9,10 @@ def index(request):
     context = {"result": ""}
     if request.method == 'POST' and request.FILES:
         file = request.FILES['file']
-        fs = FileSystemStorage()
-        filename = fs.save(file.name, file)
-        dataset = main(filename)
+        dataset = main(file)
         table = html_string.format(table=dataset)
-        with open("home/templates/pages/dataset.html", "w", encoding="utf8") as f:
-            f.write(table)
-            return render(request, "pages/dataset.html")
+        # with open("home/templates/pages/dataset.html", "w", encoding="utf8") as f:
+        #     f.write(table)
+        return render(request, table)
         # context = {"result": dataset}
     return render(request, 'pages/index.html', context=context)
