@@ -1,7 +1,9 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from home.utils import main
 from home.templates.pages.table_base import html_string
+
 
 # Create your views here.
 
@@ -13,6 +15,7 @@ def index(request):
         table = html_string.format(table=dataset)
         # with open("home/templates/pages/dataset.html", "w", encoding="utf8") as f:
         #     f.write(table)
-        return render(request, table)
+        context = {"result": dataset}
+        return HttpResponse(table)
         # context = {"result": dataset}
     return render(request, 'pages/index.html', context=context)

@@ -1,4 +1,5 @@
 import pandas as pd
+from pretty_html_table import pretty_html_table
 
 
 def assign_kassa(row):
@@ -60,5 +61,5 @@ def main(file):
     kolvo = kolvo.groupby(['Номер отправления или идентификатор услуги'])['Количество'].mean().reset_index()
     data = data.loc[data['Итого'] != 0]
     data['kassa'] = data.apply(assign_kassa, axis=1)
-    data = data.to_html(classes='style.css')
+    data = pretty_html_table.build_table(data, 'green_light')
     return data
