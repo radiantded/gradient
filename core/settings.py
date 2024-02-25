@@ -117,7 +117,6 @@ else:
             'USER': 'host1850301',
             'PASSWORD': 'enver2024',
             'HOST': 'localhost',
-            'PORT': '3306',
         }
     }
 
