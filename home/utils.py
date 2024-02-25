@@ -1,3 +1,4 @@
+import pandas
 import pandas as pd
 from pretty_html_table import pretty_html_table
 
@@ -59,7 +60,7 @@ def main(file):
     kolvo = data[['Номер отправления или идентификатор услуги', 'Количество']]
     data = data.groupby(['Номер отправления или идентификатор услуги', 'Артикул'])['Итого'].sum().reset_index()
     kolvo = kolvo.groupby(['Номер отправления или идентификатор услуги'])['Количество'].mean().reset_index()
-    data = data.loc[data['Итого'] != 0]
+    data: pandas.DataFrame = data.loc[data['Итого'] != 0]
     data['kassa'] = data.apply(assign_kassa, axis=1)
-    data = pretty_html_table.build_table(data, 'green_light')
-    return data
+    # data = pretty_html_table.build_table(data, 'green_light')
+    return data.to_html(classes='table')

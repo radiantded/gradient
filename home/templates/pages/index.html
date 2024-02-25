@@ -2,6 +2,58 @@
 {% load static %}
 {% block content %}
 <!-- [ Main Content ] start -->
+    <style>
+    .input-file {
+	position: relative;
+	display: inline-block;
+}
+.input-file span {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+	outline: none;
+	text-decoration: none;
+	font-size: 14px;
+	vertical-align: middle;
+	color: rgb(255 255 255);
+	text-align: center;
+	border-radius: 4px;
+	background-color: #4099ff;
+	line-height: 22px;
+	height: 40px;
+	padding: 10px 20px;
+	box-sizing: border-box;
+	border: none;
+	margin: 0;
+	transition: background-color 0.2s;
+}
+.input-file input[type=file] {
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+	display: block;
+	width: 0;
+	height: 0;
+}
+ 
+/* Focus */
+.input-file input[type=file]:focus + span {
+	box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+ 
+/* Hover/active */
+.input-file:hover span {
+	background-color: #4099ff;
+}
+.input-file:active span {
+	background-color: #4099ff;
+}
+ 
+/* Disabled */
+.input-file input[type=file]:disabled + span {
+	background-color: #eee;
+}
+    </style>
 <div class="row">
     <!-- order-card start -->
     <div class="col-md-6 col-xl-3">
@@ -10,16 +62,25 @@
                 <h3 class="text-white">Загрузить файл</h3>
                 <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                  <input type="file" name="file">
-                  <button class="btn btn-block btn-primary mt-2 mb-4" type="submit">Загрузить</button>
+                    <label class="input-file">
+                        <input type="file" name="file">		
+                        <span>Загрузить</span>
+                    </label>
                 </form>
                 
             </div>
         </div>
     </div>
+    {% if result %}
+        <div class="col-md-6 col-xl-3">
+            <div class="card-body table-border-style">
+                    {{ result | safe }}
+            </div>
+        </div>
+    {% endif %}
     <!-- Customer overview end -->
 </div>
-    {{ result }}
+    
 <!-- [ Main Content ] end -->
 {% endblock content %}
 {% block extrajs %}
@@ -27,4 +88,11 @@
 <script src="{% static 'assets/js/pages/dashboard-main.js' %}"></script>
 <!-- Apex Chart -->
 <script src="{% static 'assets/js/plugins/apexcharts.min.js' %}"></script>
+    <script>
+    var input = document.querySelector("input[type='file']");
+    input.onchange = function () {
+       this.form.submit();
+}
+    </script>
 {% endblock extrajs %}
+
