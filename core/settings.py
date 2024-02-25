@@ -112,8 +112,12 @@ if DB_ENGINE and DB_NAME and DB_USERNAME:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'db.sqlite3',
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'host1850301_django',
+            'USER': 'host1850301',
+            'PASSWORD': 'enver2024',
+            'HOST': 'localhost',
+            'PORT': '3306',
         }
     }
 
