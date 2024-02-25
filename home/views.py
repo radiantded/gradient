@@ -1,16 +1,17 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.decorators import login_required
 from home.utils import main
 from home.templates.pages.table_base import html_string
 
 
 # Create your views here.
-
+@login_required(login_url='/accounts/auth-signin/')
 def index(request):
     context = {"result": ""}
-    if not request.user.is_authenticated:
-        return redirect('auth_signin')
+    print(request.user.is_authenticated)
+    # if not request.user.is_authenticated:
+    #     return redirect('auth_signin')
     if request.method == 'POST' and request.FILES:
         file = request.FILES['file']
         dataset = main(file)
