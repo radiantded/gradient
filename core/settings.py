@@ -116,8 +116,8 @@ else:
             'NAME': 'host1850301_django',
             'USER': 'host1850301_enver',
             'PASSWORD': 'enver2024',
-            'HOST': 'localhost',
-            'PORT': '3306',
+            'HOST': '127.0.0.1',
+            'PORT': '3308',
         }
     }
 
