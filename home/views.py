@@ -6,7 +6,7 @@ from home.templates.pages.table_base import html_string
 
 
 # Create your views here.
-# @login_required(login_url='/accounts/auth-signin/')
+@login_required(login_url='/accounts/auth-signin/')
 def index(request):
     context = {"result": ""}
     print(request.user.is_authenticated)
