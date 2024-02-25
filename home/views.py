@@ -9,8 +9,8 @@ from home.templates.pages.table_base import html_string
 
 def index(request):
     context = {"result": ""}
-    if not request.user.is_authenticated:
-        return redirect('auth_signin')
+    # if not request.user.is_authenticated:
+    #     return redirect('auth_signin')
     if request.method == 'POST' and request.FILES:
         file = request.FILES['file']
         dataset = main(file)
