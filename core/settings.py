@@ -114,7 +114,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'host1850301_django',
-            'USER': 'host1850301',
+            'USER': 'host1850301_enver',
             'PASSWORD': 'enver2024',
             'HOST': 'localhost',
             'PORT': '3306',
