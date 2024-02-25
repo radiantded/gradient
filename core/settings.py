@@ -34,7 +34,7 @@ DEBUG = 'RENDER' not in os.environ
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testkaitag.ru.host1850301.serv80.hostland.pro']
 
 # Add here your deployment HOSTS
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:5085', 'http://127.0.0.1:8000', 'http://127.0.0.1:5085', 'testkaitag.ru.host1850301.serv80.hostland.pro']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:5085', 'http://127.0.0.1:8000', 'http://127.0.0.1:5085', 'http://testkaitag.ru.host1850301.serv80.hostland.pro']
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:    
