@@ -116,7 +116,8 @@ else:
             'NAME': 'host1850301_django',
             'USER': 'host1850301',
             'PASSWORD': 'enver2024',
-            'HOST': 'localhost',
+            'HOST': 'testkaitag.ru.host1850301.serv80.hostland.pro',
+            'PORT': '3306',
         }
     }
 
