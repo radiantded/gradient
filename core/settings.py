@@ -120,6 +120,12 @@ else:
             'PORT': '3308',
         }
     }
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': 'db.sqlite3'
+    #     }
+    # }
 
 MEDIA_ROOT = '/media'
 
