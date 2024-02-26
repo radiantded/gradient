@@ -113,11 +113,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'host1850301_django',
-            'USER': 'host1850301_enver',
-            'PASSWORD': 'enver2024',
-            'HOST': '127.0.0.1',
-            'PORT': '3308',
+            'NAME': 'django',
+            'USER': 'root',
+            'PASSWORD': 'deadok',
+            'HOST': 'localhost',
+            'PORT': '3306',
         }
     }
     # DATABASES = {
