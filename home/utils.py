@@ -2,7 +2,6 @@ import pandas
 import pandas as pd
 from pretty_html_table import pretty_html_table
 
-
 def assign_kassa(row):
     BIB_SKU = ['KAR-014V1', 'AB-840122', 'ABBK4006P1LW', 'ABBK1439C6L', 'ABBK1439C8L', 'ABBK1013DP1L', 'ABBK1465PB',
                'ABBK4006P1L', 'ABBK4006P1LB', 'ABBK1492PS', 'ABBK1492PSB']
@@ -37,12 +36,13 @@ def assign_kassa(row):
     else:
         return 'Unknown'
 
-def main(file):
+def main(file, file_2, period):
     data = pd.read_excel(file)  # загружаем файл начислений
+    data1 = data
     data['Дата начисления'] = data['Дата начисления'].astype(str)
     max_date = data['Дата начисления'].max()
     min_date = data['Дата начисления'].min()
-    # sebes = pd.read_excel('sebes.xlsx')
+    sebes = pd.read_excel(file_2)
     data = (data.fillna(0))
     USLUGI = data.loc[data['Номер отправления или идентификатор услуги'] == 0]
 
@@ -60,7 +60,87 @@ def main(file):
     kolvo = data[['Номер отправления или идентификатор услуги', 'Количество']]
     data = data.groupby(['Номер отправления или идентификатор услуги', 'Артикул'])['Итого'].sum().reset_index()
     kolvo = kolvo.groupby(['Номер отправления или идентификатор услуги'])['Количество'].mean().reset_index()
-    data: pandas.DataFrame = data.loc[data['Итого'] != 0]
-    data['kassa'] = data.apply(assign_kassa, axis=1)
+    data = data.loc[data['Итого'] != 0]
     # data = pretty_html_table.build_table(data, 'green_light')
-    return data.to_html(classes='table')
+    hranenie = data1[
+        (data1['Тип начисления'] == 'Услуга размещения товаров на складе')]
+    logistica = data1[
+        (data1['Тип начисления'] == 'Доставка покупателю')]
+    vozvrati = data1[(data1['Тип начисления'] == 'Получение возврата, отмены, невыкупа от покупателя') | (
+                data1['Тип начисления'] == 'Доставка и обработка возврата, отмены, невыкупа')]
+    rekla = data1[
+        (data1['Тип начисления'] == 'Услуги продвижения товаров')]
+    reklama = -rekla['Итого'].sum()
+    hran = -hranenie['Итого'].sum()
+
+    logistica = logistica[['Артикул', 'Количество',
+                           'Обработка отправления (Drop-off/Pick-up) (разбивается по товарам пропорционально количеству в отправлении)',
+                           'Обработка возврата', 'Обратная логистика',
+                           'Обработка отмененного или невостребованного товара (разбивается по товарам в отправлении в одинаковой пропорции)',
+                           'Логистика',
+                           'Последняя миля (разбивается по товарам пропорционально доле цены товара в сумме отправления)']]
+    vozvrati = vozvrati[['Артикул', 'Количество', 'Итого']]
+
+    cols = [
+        'Обработка отправления (Drop-off/Pick-up) (разбивается по товарам пропорционально количеству в отправлении)',
+        'Обработка возврата', 'Обратная логистика',
+        'Обработка отмененного или невостребованного товара (разбивается по товарам в отправлении в одинаковой пропорции)',
+        'Логистика', 'Последняя миля (разбивается по товарам пропорционально доле цены товара в сумме отправления)']
+    logistica['Итого'] = logistica[cols].sum(axis=1)
+
+    cols = [2, 3, 4, 5, 6, 7]
+    logistica.drop(logistica.columns[cols], axis=1, inplace=True)
+    DOP = data.loc[data['Итого'] < 0]
+    PROD = data.loc[data['Итого'] > 0]
+
+    PROD['USLUGI_SUM'] = ((USLUGI['Итого'].sum()) / (PROD['Итого'].sum())) * -1
+    PROD['BEZ USLUG'] = PROD['Итого'] - (PROD['Итого'] * PROD['USLUGI_SUM'])
+
+    PROD = PROD.merge(kolvo, on='Номер отправления или идентификатор услуги')
+    PROD = PROD.loc[PROD['Итого'] > 20]
+
+    PROD['vozv'] = (DOP['Итого'].sum() / PROD['Итого'].sum())
+    PROD['total_all'] = PROD['BEZ USLUG'] + PROD['vozv'] * PROD['Итого']
+    PROD['total'] = PROD['total_all'] / PROD['Количество']
+    df_concat = PROD
+    df_concat['zakupka'] = df_concat['Артикул'].map(sebes.set_index('Артикул поставщика')['zakupka'])
+    df_concat['Дата транзакции'] = max_date
+    df_concat = df_concat.dropna()
+    dataframe = df_concat[['Артикул', 'Дата транзакции', 'Количество', 'Итого', 'total_all', 'zakupka']]
+
+    dataframe['Налог'] = (dataframe['total_all'] * 0.07)
+
+    dataframe['Прибыль'] = dataframe['total_all'] - dataframe['Налог'] - (
+                dataframe['zakupka'] * dataframe['Количество'])
+    dataframe['Маркетплейс'] = 'OZ'
+
+    dataframe = dataframe.rename(
+        columns={'Количество': 'Кол-во', 'Артикул': 'SKU', 'Итого': 'К перечислению', 'total_all': 'Выручка',
+                 'zakupka': 'Закупка'})
+    dataframe['Прибыль за шт.'] = dataframe['Прибыль'] / dataframe['Кол-во']
+    dataframe_1 = dataframe[
+        ['SKU', 'Дата транзакции', 'Кол-во', 'К перечислению', 'Выручка', 'Закупка', 'Налог', 'Прибыль', 'Маркетплейс',
+         'Прибыль за шт.']]
+    # ВЕРХНИЕ БЛОКИ МЕТРИК
+    kolvo_zakazov = df_concat['Количество'].sum()
+    kolvo_vozvrat = data1[
+        (data1['Тип начисления'] == 'Доставка и обработка возврата, отмены, невыкупа')]['Количество'].sum()
+    kolvo_tovarov = data1[
+        (data1['Тип начисления'] == 'Доставка покупателю')]['Количество'].sum()
+    obrat_logistica = data1[
+        (data1['Тип начисления'] == 'Доставка и обработка возврата, отмены, невыкупа')]['Количество'].sum()
+    viruchka = df_concat['total_all'].sum()
+    EBITDA = dataframe_1['Прибыль'].sum()
+    ZAKUPKA = dataframe_1['Закупка'].sum()
+
+    # НИЖНИЙ БЛОК ABC АНАЛИЗА
+    dataset = dataframe
+    dashboard_data = dataset.groupby(['SKU'])[
+        'К перечислению', 'Кол-во', 'Выручка', 'Закупка', 'Прибыль'].sum().reset_index()
+    dashboard_data['ROI'] = round((dashboard_data['Прибыль'] / dashboard_data['Закупка']) * 100, 2)
+    ROI = round(EBITDA / ZAKUPKA * 100, 2)
+    dashboard_data = dashboard_data.sort_values(by='Прибыль', ascending=False)
+    dashboard_data = dashboard_data.rename(columns={'К перечислению': 'Продажи', 'Прибыль': 'EBITDA'})
+
+    return dashboard_data
+

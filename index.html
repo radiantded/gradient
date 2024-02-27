@@ -1,0 +1,112 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+<!-- [ Main Content ] start -->
+    <style>
+    .input-file {
+	position: relative;
+	display: inline-block;
+}
+.input-file span {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+	outline: none;
+	text-decoration: none;
+	font-size: 14px;
+	vertical-align: middle;
+	color: rgb(255 255 255);
+	text-align: center;
+	border-radius: 4px;
+	background-color: #4099ff;
+	line-height: 22px;
+	height: 40px;
+	padding: 10px 20px;
+	box-sizing: border-box;
+	border: none;
+	margin: 0;
+	transition: background-color 0.2s;
+}
+.input-file input[type=file] {
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+	display: block;
+	width: 0;
+	height: 0;
+}
+ 
+/* Focus */
+.input-file input[type=file]:focus + span {
+	box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+ 
+/* Hover/active */
+.input-file:hover span {
+	background-color: #4099ff;
+}
+.input-file:active span {
+	background-color: #4099ff;
+}
+ 
+/* Disabled */
+.input-file input[type=file]:disabled + span {
+	background-color: #eee;
+}
+    </style>
+<div class="row">
+    <!-- order-card start -->
+    <div class="col-md-6 col-xl-3">
+        <div class="card bg-c-green order-card">
+            <div class="card-body">
+                <h3 class="text-white">Загрузить файл</h3>
+                <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="inputGroupFile02">
+                            <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                        </div>
+                        <div class="input-group-append">
+                            <span class="input-group-text">Upload</span>
+                        </div>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card bg-c-green order-card">
+            <div class="card-body">
+                <h6 class="text-white">Total Sales</h6>
+                <h2 class="text-right text-white"><i class="feather icon-tag float-left"></i><span>1641</span></h2>
+                <p class="m-b-0">This Month<span class="float-right">213</span></p>
+            </div>
+        </div>
+    </div>
+    {% if result %}
+        <div class="col-md-6 col-xl-3">
+            <div class="card-body table-border-style">
+                    {{ result | safe }}
+            </div>
+        </div>
+    {% endif %}
+    <!-- Customer overview end -->
+</div>
+    
+<!-- [ Main Content ] end -->
+{% endblock content %}
+{% block extrajs %}
+<!-- custom-chart js -->
+<script src="{% static 'assets/js/pages/dashboard-main.js' %}"></script>
+<!-- Apex Chart -->
+<script src="{% static 'assets/js/plugins/apexcharts.min.js' %}"></script>
+    <script>
+    var input = document.querySelector("input[type='file']");
+    input.onchange = function () {
+       this.form.submit();
+}
+    </script>
+{% endblock extrajs %}
+
