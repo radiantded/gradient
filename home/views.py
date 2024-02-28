@@ -38,8 +38,10 @@ def index(request):
         # for val in dataset.to_json().values():
         #     for inner_val in val.values():
         #         result.append(inner_val)
+
+
         context = {
-            "data": dataset.to_json()
+            "data": dataset.values.tolist()
         }
         # return HttpResponse(table)
         # context = {"result": dataset}
