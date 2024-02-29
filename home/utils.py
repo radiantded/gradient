@@ -132,15 +132,25 @@ def main(file, file_2, period):
     viruchka = df_concat['total_all'].sum()
     EBITDA = dataframe_1['Прибыль'].sum()
     ZAKUPKA = dataframe_1['Закупка'].sum()
+    ROI = round(EBITDA / ZAKUPKA * 100, 2)
+    blocks = {
+        "orders": kolvo_zakazov,
+        "revenue": viruchka,
+        "returns": kolvo_vozvrat,
+        "profit": EBITDA,
+        "roi": ROI,
+        "purchase": ZAKUPKA
+    }
+    print(blocks)
 
     # НИЖНИЙ БЛОК ABC АНАЛИЗА
     dataset = dataframe
     dashboard_data = dataset.groupby(['SKU'])[
         'К перечислению', 'Кол-во', 'Выручка', 'Закупка', 'Прибыль'].sum().reset_index()
     dashboard_data['ROI'] = round((dashboard_data['Прибыль'] / dashboard_data['Закупка']) * 100, 2)
-    ROI = round(EBITDA / ZAKUPKA * 100, 2)
+
     dashboard_data = dashboard_data.sort_values(by='Прибыль', ascending=False)
     dashboard_data = dashboard_data.rename(columns={'К перечислению': 'Продажи', 'Прибыль': 'EBITDA'})
 
-    return dashboard_data
+    return dashboard_data, blocks
 
