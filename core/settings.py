@@ -110,22 +110,22 @@ if DB_ENGINE and DB_NAME and DB_USERNAME:
         }, 
     }
 else:
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.mysql',
-    #         'NAME': 'django',
-    #         'USER': 'root',
-    #         'PASSWORD': 'deadok',
-    #         'HOST': 'localhost',
-    #         'PORT': '3306',
-    #     }
-    # }
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'db.sqlite3'
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'django',
+            'USER': 'root',
+            'PASSWORD': 'deadok',
+            'HOST': 'localhost',
+            'PORT': '3306',
         }
     }
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': 'db.sqlite3'
+    #     }
+    # }
 
 MEDIA_ROOT = '/media'
 
