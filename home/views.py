@@ -15,14 +15,17 @@ from django.core.files.storage import FileSystemStorage
 
 # @login_required(login_url='/accounts/auth-signin/')
 def index(request):
-    context = {"result": ""}
+    if request.method == 'GET':
+        form = UploadFileForm()
+        context = {"form": form}
     # if not request.user.is_authenticated:
     #     return redirect('auth_signin')
-    if request.method == 'POST' and request.FILES:
+    elif request.method == 'POST' and request.FILES:
         try:
             period = request.POST.get("period")
             file_1 = request.FILES['file_1']
             file_2 = request.FILES['file_2']
+            form = UploadFileForm(request.FILES)
             abc, blocks, dataframe = main(file_1, file_2, period)
         except:
             return render(request, 'pages/index.html')
@@ -42,8 +45,10 @@ def index(request):
             "roi": round(blocks["roi"]),
             "returns": round(blocks["returns"]),
             "profit": round(blocks["profit"]),
-            "purchase": round(blocks["purchase"])
+            "purchase": round(blocks["purchase"]),
+            "form": form
         }
+
     return render(request, 'pages/index.html', context=context)
 
 

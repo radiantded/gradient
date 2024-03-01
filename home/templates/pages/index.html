@@ -51,9 +51,26 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h4>Загрузка файлов</h4>
+                <h4>Загрузка файлов отчёта и себестоимости</h4>
             </div>
             <div class="card-body">
+                
+{#            <form method="post" enctype="multipart/form-data">#}
+{#                {% csrf_token %}#}
+{#                <div class="custom-file">#}
+{#                    <h6><label for="file_1"><b>{{ form.file_1.label }}</b></label></h6>#}
+{#                    <input type="file" name="file_1">#}
+{#                </div>#}
+{#                <br>#}
+{#                <div class="custom-file">#}
+{#                    <h6><label for="file_2"><b>{{ form.file_2.label }}</b></label></h6>#}
+{#                    <input type="file" name="file_2">#}
+{#                </div>#}
+{#                <br>    #}
+{#                <p></p>#}
+{#                <br>#}
+{#                <button type="submit" class="btn">Рассчитать</button>#}
+{#            </form>#}
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="custom-file">
@@ -78,9 +95,9 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <a href="/download" download="dataframe.xlsx"><h4>Скачать отчёт</h4></a>
+                <a href="/download" download="dataframe.xlsx"><h4>Экспорт в XLSX</h4></a>
             </div>
-            
+
             <div class="card-body table-border-style">
                 <div class="table-responsive">
                     <table class="table">
@@ -106,7 +123,7 @@
                                     {% endfor %}
                                 </tr>
                                 {% endfor %}
-                            
+
                         </tbody>
                     </table>
                 </div>
@@ -119,7 +136,7 @@
 {#            <form action="/download">#}
 {#                <input type="submit" value="Go to Google" />#}
 {#            </form>#}
-            
+
 {#            <button type="button" onclick="#fileRequest()"> Download </button>#}
 {#            <script>#}
 {#              $("#fileRequest").click(function() {#}
@@ -127,7 +144,7 @@
 {#                    window.location = 'file.doc';#}
 {#                });#}
 {#           </script>#}
-            
+
         </div>
     </div>
     
@@ -251,6 +268,11 @@ input[type="file"]::file-selector-button:active {
   background-color: #e5e7eb;
 }
 
+.btn-warning {
+    color: #fff;
+    background-color: #ffb64d;
+    border-color: #ffb64d;
+}
 
 .btn {
 	display: inline-block;
@@ -266,7 +288,8 @@ input[type="file"]::file-selector-button:active {
 	font-weight: 500;
 	text-decoration: none;
 	color: #fff;
-	background-color: #1a73e8;
+	background-color: #ffb64d;
+    border-color: #ffb64d;
 	position: relative;
 	overflow:hidden;
 	vertical-align: top;
@@ -296,21 +319,21 @@ input[type="file"]::file-selector-button:active {
 		opacity: 0;
 	}
 }
-.btn:hover {
-	box-shadow: 0 1px 2px 0 rgb(26 115 232 / 45%), 0 1px 3px 1px rgb(26 115 232 / 30%);
-	background-color: #297be6;
-}
-.btn:active {
-	box-shadow: 0 1px 2px 0 rgb(26 115 232 / 45%), 0 2px 6px 2px rgb(26 115 232 / 30%);
-	background-color: #1a73e8 !important;
-}
-.btn:focus-visible {
-	box-shadow: 0 0 0 3px lightskyblue;
-}
-.btn:disabled {
-	pointer-events: none;
-	opacity: 0.65;
-}
+{#.btn:hover {#}
+{#	box-shadow: 0 1px 2px 0 rgb(26 115 232 / 45%), 0 1px 3px 1px rgb(26 115 232 / 30%);#}
+{#	background-color: #297be6;#}
+{#}#}
+{#.btn:active {#}
+{#	box-shadow: 0 1px 2px 0 rgb(26 115 232 / 45%), 0 2px 6px 2px rgb(26 115 232 / 30%);#}
+{#	background-color: #1a73e8 !important;#}
+{#}#}
+{#.btn:focus-visible {#}
+{#	box-shadow: 0 0 0 3px lightskyblue;#}
+{#}#}
+{#.btn:disabled {#}
+{#	pointer-events: none;#}
+{#	opacity: 0.65;#}
+{#}#}
 </style>
 <!-- [ Main Content ] end -->
 {% endblock content %}
