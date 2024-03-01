@@ -155,13 +155,15 @@ def main(file, file_2, period):
     return dashboard_data, blocks, dataframe_1
 
 
-def round_values(values):
+def round_values(values, to_int=True):
     table_result = []
     for row in values:
         row_result = []
         for value in row:
             if isinstance(value, float):
                 value = round(value, 2)
+                if to_int:
+                    value = int(value)
             row_result.append(value)
         table_result.append(row_result)
     return table_result

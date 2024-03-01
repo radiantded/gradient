@@ -34,7 +34,7 @@ def index(request):
         except:
             pass
         table = dataframe.values.tolist()[:3]
-        table = round_values(table)
+        table = round_values(table, to_int=False)
         abc = round_values(abc.values.tolist())
 
         context = {
@@ -48,7 +48,7 @@ def index(request):
             "purchase": round(blocks["purchase"]),
             "form": form
         }
-
+    # pprint(context)
     return render(request, 'pages/index.html', context=context)
 
 
