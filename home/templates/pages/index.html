@@ -57,33 +57,77 @@
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="custom-file">
-                        <input type="file" name="file_1" class="custom-file-input" id="inputGroupFile01">
-                        <label class="custom-file-label" for="file_1">Отчёт</label>
-                        
+                        <h6><label for="file_1"><b>Отчёт</b></label></h6>
+                        <input type="file" name="file_1">
                     </div>
                     <div class="custom-file">
-                        <input type="file" name="file_2" class="custom-file-input" id="inputGroupFile01">
-                        <label class="custom-file-label" for="file_2">Себестоимость</label>
+                        <p></p>
+                        <br>
+                        <h6><label for="file_2"><b>Себестоимость</b></label></h6>
+                        <input type="file" name="file_2">
                     </div>
-{#                    <div class="input-group mb-3">#}
-{#                        <div class="input__wrapper">#}
-{#                            <label for="file_1"><b>Отчёт</b></label>#}
-{#                            <p><input type="file" name="file_1" id="file1"></p>#}
-{#                            <label for="file_2"><b>Себестоимость</b></label>#}
-{#                            <p><input type="file" name="file_2" class="input" id="file2"></p>#}
-{#                            <label for="period"><b>Период</b></label>#}
-{#                            <p><input type="date" name="period" id="period"></p>#}
-{#                            <button type="submit" class="btn">Загрузить</button>#}
-{#                        </div>#}
-{#                        #}
-{#                    </div>#}
+                    <p></p>
+                    <br>
+                    <button type="submit" class="btn">Рассчитать</button>
+                    <br>
+
                 </form>
-                <script>$('.input-file input[type=file]').on('change', function(){
-                    let file = this.files[0];
-                    $(this).next().html(file.name);
-                });
-                </script>
             </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <a href="/download" download="dataframe.xlsx"><h4>Скачать отчёт</h4></a>
+            </div>
+            
+            <div class="card-body table-border-style">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Дата транзакции</th>
+                                <th>Кол-во</th>
+                                <th>К перечислению</th>
+                                <th>Выручка</th>
+                                <th>Закупка</th>
+                                <th>Налог</th>
+                                <th>Прибыль</th>
+                                <th>Маркетплейс</th>
+                                <th>Прибыль за шт.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in table %}
+                                <tr>
+                                    {% for el in row %}
+                                    <td>{{ el }}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            
+                        </tbody>
+                    </table>
+                </div>
+{#            <br>#}
+{#            <div>#}
+{#                <a href="/download" download="dataframe.xlsx"><h5>Скачать</h5></a>#}
+{#            </div>#}
+            </div>
+{#            <input type="button" onclick="location.href='/download';" value="Go to Google" />#}
+{#            <form action="/download">#}
+{#                <input type="submit" value="Go to Google" />#}
+{#            </form>#}
+            
+{#            <button type="button" onclick="#fileRequest()"> Download </button>#}
+{#            <script>#}
+{#              $("#fileRequest").click(function() {#}
+{#                    // hope the server sets Content-Disposition: attachment!#}
+{#                    window.location = 'file.doc';#}
+{#                });#}
+{#           </script>#}
+            
         </div>
     </div>
     
@@ -130,73 +174,85 @@ var name = $(this).val;
 $(this).text(name);
 })</script>
 <style>
-.custom-file {
-    position: relative;
-    display: inline-block;
-    width: 50%;
-    height: calc(1.5em + .75rem + 2px);
-    margin-bottom: 0
+input[type="file"] {
+  outline: none;
+  padding: 4px;
+  margin: -4px;
 }
 
-.custom-file-input {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    height: calc(1.5em + .75rem + 2px);
-    margin: 0;
-    opacity: 0
+input[type="file"]:focus-within::file-selector-button,
+input[type="file"]:focus::file-selector-button {
+  outline: 2px solid #0964b0;
+  outline-offset: 2px;
 }
 
-.custom-file-input:focus~.custom-file-label {
-    border-color: #c0ddff;
-    box-shadow: 0 0 0 .2rem rgba(64,153,255,.25)
+input[type="file"]::before {
+  top: 16px;
 }
 
-.custom-file-input:disabled~.custom-file-label {
-    background-color: #e9ecef
+input[type="file"]::after {
+  top: 14px;
 }
 
-.custom-file-input:lang(en)~.custom-file-label::after {
-    content: "Browse"
+/* ------- From Step 2 ------- */
+
+input[type="file"] {
+  position: relative;
 }
 
-.custom-file-input~.custom-file-label[data-browse]::after {
-    content: attr(data-browse)
+input[type="file"]::file-selector-button {
+  width: 136px;
+  color: transparent;
 }
 
-.custom-file-label {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    z-index: 1;
-    height: calc(1.5em + .75rem + 2px);
-    padding: .375rem .95rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    border: 1px solid #ced4da;
-    border-radius: 5px
+/* Faked label styles and icon */
+input[type="file"]::before {
+  position: absolute;
+  pointer-events: none;
+  /*   top: 11px; */
+  left: 40px;
+  color: #0964b0;
+  content: "Upload File";
 }
 
-.custom-file-label::after {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 3;
-    display: block;
-    height: calc(1.5em + .75rem);
-    padding: .375rem .95rem;
-    line-height: 1.5;
-    color: #495057;
-    content: "Browse";
-    background-color: #e9ecef;
-    border-left: inherit;
-    border-radius: 0 5px 5px 0
+input[type="file"]::after {
+  position: absolute;
+  pointer-events: none;
+  /*   top: 10px; */
+  left: 16px;
+  height: 20px;
+  width: 20px;
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230964B0'%3E%3Cpath d='M18 15v3H6v-3H4v3c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3h-2zM7 9l1.41 1.41L11 7.83V16h2V7.83l2.59 2.58L17 9l-5-5-5 5z'/%3E%3C/svg%3E");
 }
-        .btn {
+
+/* ------- From Step 1 ------- */
+
+/* file upload button */
+input[type="file"]::file-selector-button {
+  border-radius: 4px;
+  padding: 0 16px;
+  height: 40px;
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05);
+  margin-right: 16px;
+  transition: background-color 200ms;
+}
+
+/* file upload button hover state */
+input[type="file"]::file-selector-button:hover {
+  background-color: #f3f4f6;
+}
+
+/* file upload button active state */
+input[type="file"]::file-selector-button:active {
+  background-color: #e5e7eb;
+}
+
+
+.btn {
 	display: inline-block;
 	box-sizing: border-box;
 	padding: 0 15px;

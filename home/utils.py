@@ -152,5 +152,17 @@ def main(file, file_2, period):
     dashboard_data = dashboard_data.sort_values(by='Прибыль', ascending=False)
     dashboard_data = dashboard_data.rename(columns={'К перечислению': 'Продажи', 'Прибыль': 'EBITDA'})
 
-    return dashboard_data, blocks
+    return dashboard_data, blocks, dataframe_1
+
+
+def round_values(values):
+    table_result = []
+    for row in values:
+        row_result = []
+        for value in row:
+            if isinstance(value, float):
+                value = round(value, 2)
+            row_result.append(value)
+        table_result.append(row_result)
+    return table_result
 
