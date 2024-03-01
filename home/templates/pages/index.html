@@ -56,18 +56,27 @@
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="input-group mb-3">
-                        <div class="input-file">
-                            <label for="file_1"><b>Отчёт</b></label>
-                            <p><input type="file" name="file_1" class="input-file" id="file1"></p>
-                            <label for="file_2"><b>Себестоимость</b></label>
-                            <p><input type="file" name="file_2" class="input-file" id="file2"></p>
-                            <label for="period"><b>Период</b></label>
-                            <p><input type="date" name="period" id="period"></p>
-                            <button type="submit" class="feather icon-share">Загрузить</button>
-                        </div>
+                    <div class="custom-file">
+                        <input type="file" name="file_1" class="custom-file-input" id="inputGroupFile01">
+                        <label class="custom-file-label" for="file_1">Отчёт</label>
                         
                     </div>
+                    <div class="custom-file">
+                        <input type="file" name="file_2" class="custom-file-input" id="inputGroupFile01">
+                        <label class="custom-file-label" for="file_2">Себестоимость</label>
+                    </div>
+{#                    <div class="input-group mb-3">#}
+{#                        <div class="input__wrapper">#}
+{#                            <label for="file_1"><b>Отчёт</b></label>#}
+{#                            <p><input type="file" name="file_1" id="file1"></p>#}
+{#                            <label for="file_2"><b>Себестоимость</b></label>#}
+{#                            <p><input type="file" name="file_2" class="input" id="file2"></p>#}
+{#                            <label for="period"><b>Период</b></label>#}
+{#                            <p><input type="date" name="period" id="period"></p>#}
+{#                            <button type="submit" class="btn">Загрузить</button>#}
+{#                        </div>#}
+{#                        #}
+{#                    </div>#}
                 </form>
                 <script>$('.input-file input[type=file]').on('change', function(){
                     let file = this.files[0];
@@ -116,6 +125,137 @@
     </div>
     <!-- Customer overview end -->
 </div>
+    <script>$('#file').change(function(){
+var name = $(this).val;
+$(this).text(name);
+})</script>
+<style>
+.custom-file {
+    position: relative;
+    display: inline-block;
+    width: 50%;
+    height: calc(1.5em + .75rem + 2px);
+    margin-bottom: 0
+}
+
+.custom-file-input {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: calc(1.5em + .75rem + 2px);
+    margin: 0;
+    opacity: 0
+}
+
+.custom-file-input:focus~.custom-file-label {
+    border-color: #c0ddff;
+    box-shadow: 0 0 0 .2rem rgba(64,153,255,.25)
+}
+
+.custom-file-input:disabled~.custom-file-label {
+    background-color: #e9ecef
+}
+
+.custom-file-input:lang(en)~.custom-file-label::after {
+    content: "Browse"
+}
+
+.custom-file-input~.custom-file-label[data-browse]::after {
+    content: attr(data-browse)
+}
+
+.custom-file-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .95rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 5px
+}
+
+.custom-file-label::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    display: block;
+    height: calc(1.5em + .75rem);
+    padding: .375rem .95rem;
+    line-height: 1.5;
+    color: #495057;
+    content: "Browse";
+    background-color: #e9ecef;
+    border-left: inherit;
+    border-radius: 0 5px 5px 0
+}
+        .btn {
+	display: inline-block;
+	box-sizing: border-box;
+	padding: 0 15px;
+	margin: 0 15px 15px 0;
+	outline: none;
+	border: none;
+	border-radius: 4px;
+	height: 36px;
+	line-height: 36px;
+	font-size: 14px;
+	font-weight: 500;
+	text-decoration: none;
+	color: #fff;
+	background-color: #1a73e8;
+	position: relative;
+	overflow:hidden;
+	vertical-align: top;
+	cursor: pointer;
+	user-select: none;
+	appearance: none;
+	touch-action: manipulation;
+	z-index: 1;
+}
+.btn span{
+	position: absolute;
+	background: #fff;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	pointer-events: none;
+	animation: btn_ripples 0.6s linear infinite;
+}
+@keyframes btn_ripples {
+	0% {
+		width: 0px;
+		height: 0px;
+		opacity: 0.5;
+	}
+	100% {
+		width: 1000px;
+		height: 1000px;
+		opacity: 0;
+	}
+}
+.btn:hover {
+	box-shadow: 0 1px 2px 0 rgb(26 115 232 / 45%), 0 1px 3px 1px rgb(26 115 232 / 30%);
+	background-color: #297be6;
+}
+.btn:active {
+	box-shadow: 0 1px 2px 0 rgb(26 115 232 / 45%), 0 2px 6px 2px rgb(26 115 232 / 30%);
+	background-color: #1a73e8 !important;
+}
+.btn:focus-visible {
+	box-shadow: 0 0 0 3px lightskyblue;
+}
+.btn:disabled {
+	pointer-events: none;
+	opacity: 0.65;
+}
+</style>
 <!-- [ Main Content ] end -->
 {% endblock content %}
 {% block extrajs %}
