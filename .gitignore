@@ -12,3 +12,4 @@ env
 #src
 *.xlsx
 .env
+.sqlite3
