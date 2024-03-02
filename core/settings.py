@@ -31,7 +31,7 @@ if not SECRET_KEY:
 DEBUG = 'RENDER' not in os.environ
 
 # Docker HOST
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testkaitag.ru.host1850301.serv80.hostland.pro']
+ALLOWED_HOSTS = ['*']
 
 # Add here your deployment HOSTS
 # CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:5085', 'http://127.0.0.1:8000', 'http://127.0.0.1:5085', 'http://testkaitag.ru.host1850301.serv80.hostland.pro']
