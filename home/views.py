@@ -1,4 +1,5 @@
 import os.path
+from datetime import datetime
 from pprint import pprint
 
 import pandas as pd
@@ -29,10 +30,11 @@ def index(request):
             abc, blocks, dataframe = main(file_1, file_2, period)
         except:
             return render(request, 'pages/index.html')
-        try:
-            dataframe.to_excel("media/dataframe.xlsx")
-        except:
-            pass
+        # try:
+        file_name = f"data-{int(datetime.timestamp(datetime.now()))}.xlsx"
+        dataframe.to_excel(f"media/{file_name}")
+        # except:
+        #     pass
         table = dataframe.values.tolist()[:3]
         table = round_values(table, to_int=False)
         abc = round_values(abc.values.tolist())
@@ -46,17 +48,18 @@ def index(request):
             "returns": round(blocks["returns"]),
             "profit": round(blocks["profit"]),
             "purchase": round(blocks["purchase"]),
-            "form": form
+            "form": form,
+            "file_name": file_name,
         }
     # pprint(context)
     return render(request, 'pages/index.html', context=context)
 
 
-def download(request):
+def download(request, file_name):
     try:
-        with open("media/dataframe.xlsx", "rb") as file:
+        with open(f"media/{file_name}", "rb") as file:
             response = HttpResponse(file.read(), content_type="application/vnd.ms-excel")
-            response['Content-Disposition'] = 'attachment; filename=dataframe.xlsx'
+            response['Content-Disposition'] = f'attachment; filename={file_name}'
             return HttpResponse(response)
     except:
         return render(request, 'pages/index.html')

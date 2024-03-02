@@ -95,7 +95,11 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <a href="/download" download="dataframe.xlsx"><h4>Экспорт в XLSX</h4></a>
+                {% if file_name %}
+                <a href="{% url "download" file_name %}" download="{{ file_name }}"><h4>Экспорт в XLSX</h4></a>
+                {% else %}
+                <h4>Экспорт в XLSX</h4>
+                {% endif %}
             </div>
 
             <div class="card-body table-border-style">
