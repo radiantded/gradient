@@ -54,36 +54,23 @@
                 <h4>Загрузка файлов отчёта и себестоимости</h4>
             </div>
             <div class="card-body">
-                
-{#            <form method="post" enctype="multipart/form-data">#}
-{#                {% csrf_token %}#}
-{#                <div class="custom-file">#}
-{#                    <h6><label for="file_1"><b>{{ form.file_1.label }}</b></label></h6>#}
-{#                    <input type="file" name="file_1">#}
-{#                </div>#}
-{#                <br>#}
-{#                <div class="custom-file">#}
-{#                    <h6><label for="file_2"><b>{{ form.file_2.label }}</b></label></h6>#}
-{#                    <input type="file" name="file_2">#}
-{#                </div>#}
-{#                <br>    #}
-{#                <p></p>#}
-{#                <br>#}
-{#                <button type="submit" class="btn">Рассчитать</button>#}
-{#            </form>#}
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="custom-file">
+                        <br>
                         <h6><label for="file_1"><b>Отчёт</b></label></h6>
                         <input type="file" name="file_1">
+                        <br>
                     </div>
                     <div class="custom-file">
                         <p></p>
                         <br>
                         <h6><label for="file_2"><b>Себестоимость</b></label></h6>
                         <input type="file" name="file_2">
+                        <br>
                     </div>
                     <p></p>
+                    <br>
                     <br>
                     <button type="submit" class="btn">Рассчитать</button>
                     <br>
@@ -95,10 +82,17 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
+                <h4>Вывод таблицы</h4>
                 {% if file_name %}
-                <a href="{% url "download" file_name %}" download="{{ file_name }}"><h4>Экспорт в XLSX</h4></a>
+                    <div class="download">
+                        {% csrf_token %}
+                        <form action="https://google.com">
+                            <input type="button" class="btn" onclick="location.href='{% url "download" file_name %}';" value="Экспорт в XLSX" />
+                        </form>
+                     </div>
+{#                <a href="{% url "download" file_name %}" download="{{ file_name }}"><h4>Экспорт в XLSX</h4></a>#}
                 {% else %}
-                <h4>Экспорт в XLSX</h4>
+                
                 {% endif %}
             </div>
 
@@ -190,11 +184,22 @@
     </div>
     <!-- Customer overview end -->
 </div>
-    <script>$('#file').change(function(){
-var name = $(this).val;
-$(this).text(name);
-})</script>
+<script>$('#file').change(function(){
+    var name = $(this).val;
+    $(this).text(name);
+})
+</script>
 <style>
+.card-header2 {
+    padding: 25px 25px;
+    margin-bottom: 0;
+    background-color: transparent;
+    border-bottom: 0 solid rgba(0, 0, 0, 0.125);
+    display: inline-block;
+}
+.download {
+    float: right;
+}
 input[type="file"] {
   outline: none;
   padding: 4px;
@@ -323,21 +328,7 @@ input[type="file"]::file-selector-button:active {
 		opacity: 0;
 	}
 }
-{#.btn:hover {#}
-{#	box-shadow: 0 1px 2px 0 rgb(26 115 232 / 45%), 0 1px 3px 1px rgb(26 115 232 / 30%);#}
-{#	background-color: #297be6;#}
-{#}#}
-{#.btn:active {#}
-{#	box-shadow: 0 1px 2px 0 rgb(26 115 232 / 45%), 0 2px 6px 2px rgb(26 115 232 / 30%);#}
-{#	background-color: #1a73e8 !important;#}
-{#}#}
-{#.btn:focus-visible {#}
-{#	box-shadow: 0 0 0 3px lightskyblue;#}
-{#}#}
-{#.btn:disabled {#}
-{#	pointer-events: none;#}
-{#	opacity: 0.65;#}
-{#}#}
+
 </style>
 <!-- [ Main Content ] end -->
 {% endblock content %}

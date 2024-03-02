@@ -3,9 +3,10 @@ from datetime import datetime
 from pprint import pprint
 
 import pandas as pd
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+# from rest_framework.response import FileResponse
 
 from core.settings import BASE_DIR, MEDIA_ROOT
 from home.forms import UploadFileForm
@@ -16,10 +17,9 @@ from django.core.files.storage import FileSystemStorage
 
 @login_required(login_url='/accounts/auth-signin/')
 def index(request):
-    if request.method == 'GET':
-        form = UploadFileForm()
-        context = {"form": form}
-    elif request.method == 'POST' and request.FILES:
+    form = UploadFileForm()
+    context = {"form": form}
+    if request.method == 'POST' and request.FILES:
         try:
             period = request.POST.get("period")
             file_1 = request.FILES['file_1']
@@ -55,9 +55,12 @@ def index(request):
 
 def download(request, file_name):
     try:
-        with open(f"media/{file_name}", "rb") as file:
-            response = HttpResponse(file.read(), content_type="application/vnd.ms-excel")
-            response['Content-Disposition'] = f'attachment; filename={file_name}'
-            return HttpResponse(response)
+        file = open(f"media/{file_name}", "rb")
+        response = FileResponse(
+            file,
+            as_attachment=True
+        )
+        response['Content-Disposition'] = f'attachment; filename={file_name}'
+        return response
     except:
         return render(request, 'pages/index.html')
