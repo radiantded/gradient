@@ -14,13 +14,11 @@ from django.core.files.storage import FileSystemStorage
 
 
 
-# @login_required(login_url='/accounts/auth-signin/')
+@login_required(login_url='/accounts/auth-signin/')
 def index(request):
     if request.method == 'GET':
         form = UploadFileForm()
         context = {"form": form}
-    # if not request.user.is_authenticated:
-    #     return redirect('auth_signin')
     elif request.method == 'POST' and request.FILES:
         try:
             period = request.POST.get("period")
