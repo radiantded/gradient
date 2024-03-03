@@ -9,7 +9,7 @@
 				<div class="col-md-12">
 					<div class="card-body">
 						<img src="{% static 'assets/images/logo-dark.png' %}" alt="" class="img-fluid mb-4">
-						<h4 class="mb-3 f-w-400">Signin</h4>
+						<h4 class="mb-3 f-w-400">Вход</h4>
 						<form method="post">
 							{% csrf_token %}
 							{% if form.non_field_errors %}
@@ -29,12 +29,12 @@
 							<div class="form-group text-left mt-2">
 								<div class="checkbox checkbox-primary d-inline">
 									<input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-a1" checked="">
-									<label for="checkbox-fill-a1" class="cr"> Save credentials</label>
+									<label for="checkbox-fill-a1" class="cr"> Сохранить данные</label>
 								</div>
 							</div>
-							<button class="btn btn-block btn-primary mt-2 mb-4">Signin</button>
-							<p class="mb-2 text-muted">Forgot password? <a href="{% url 'forgot_password' %}" class="f-w-400">Reset</a></p>
-							<p class="mb-0 text-muted">Don’t have an account? <a href="{% url 'auth_signup' %}" class="f-w-400">Signup</a></p>
+							<button class="btn btn-block btn-primary mt-2 mb-4">Вход</button>
+							<p class="mb-2 text-muted">Забыли пароль? <a href="{% url 'forgot_password' %}" class="f-w-400">Ну и лох</a></p>
+							<p class="mb-0 text-muted">Нет аккаунта? <a href="{% url 'auth_signup' %}" class="f-w-400">Ну и катись колбаской</a></p>
 						</form>
 						</div>
 					</div>

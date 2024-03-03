@@ -48,7 +48,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
         <div class="card">
             <div class="card-header">
                 <h4>Загрузка файлов отчёта и себестоимости</h4>
@@ -60,26 +60,24 @@
                         <br>
                         <h6><label for="file_1"><b>Отчёт</b></label></h6>
                         <input type="file" name="file_1">
-                        <br>
+                        <p></p>
                     </div>
                     <div class="custom-file">
                         <p></p>
-                        <br>
+
                         <h6><label for="file_2"><b>Себестоимость</b></label></h6>
                         <input type="file" name="file_2">
                         <br>
                     </div>
                     <p></p>
                     <br>
-                    <br>
                     <button type="submit" class="btn">Рассчитать</button>
-                    <br>
 
                 </form>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-9">
         <div class="card">
             <div class="card-header">
                 <h4>Вывод таблицы</h4>
@@ -89,10 +87,8 @@
                         <form action="https://google.com">
                             <input type="button" class="btn" onclick="location.href='{% url "download" file_name %}';" value="Экспорт в XLSX" />
                         </form>
-                     </div>
-{#                <a href="{% url "download" file_name %}" download="{{ file_name }}"><h4>Экспорт в XLSX</h4></a>#}
+                    </div>
                 {% else %}
-                
                 {% endif %}
             </div>
 
@@ -121,33 +117,18 @@
                                     {% endfor %}
                                 </tr>
                                 {% endfor %}
-
                         </tbody>
                     </table>
                 </div>
-{#            <br>#}
-{#            <div>#}
-{#                <a href="/download" download="dataframe.xlsx"><h5>Скачать</h5></a>#}
-{#            </div>#}
             </div>
-{#            <input type="button" onclick="location.href='/download';" value="Go to Google" />#}
-{#            <form action="/download">#}
-{#                <input type="submit" value="Go to Google" />#}
-{#            </form>#}
-
-{#            <button type="button" onclick="#fileRequest()"> Download </button>#}
-{#            <script>#}
-{#              $("#fileRequest").click(function() {#}
-{#                    // hope the server sets Content-Disposition: attachment!#}
-{#                    window.location = 'file.doc';#}
-{#                });#}
-{#           </script>#}
-
         </div>
     </div>
     
     <div class="col-md-12">
         <div class="card table-card">
+            <div class="card-header">
+                <h4>ABC анализ товаров</h4>
+            </div>
             <div class="card-body p-0">
                 <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
@@ -157,12 +138,12 @@
                                     <thead>
                                         <tr>
                                             <th><span>SKU</span></th>
-                                            <th><span>Продажи <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?"><i class="feather icon-help-circle f-16"></i></a></span></th>
-                                            <th><span>Кол-во <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?"><i class="feather icon-help-circle f-16"></i></a></span></th>
-                                            <th><span>Выручка <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?"><i class="feather icon-help-circle f-16"></i></a></span></th>
-                                            <th><span>Закупка <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?"><i class="feather icon-help-circle f-16"></i></a></span></th>
-                                            <th><span>EBITDA <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?"><i class="feather icon-help-circle f-16"></i></a></span></th>
-                                            <th><span>ROI <a class="help" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?"><i class="feather icon-help-circle f-16"></i></a></span></th>
+                                            <th><span>Продажи</span></th>
+                                            <th><span>Кол-во</span></th>
+                                            <th><span>Выручка</span></th>
+                                            <th><span>Закупка</span></th>
+                                            <th><span>EBITDA</span></th>
+                                            <th><span>ROI</span></th>
                                             
                                         </tr>
                                     </thead>
@@ -182,6 +163,17 @@
             </div>
         </div>
     </div>
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>FAQ</h4>
+            </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">Suspendisse vel quam malesuada, aliquet sem sit amet, fringilla elit. Morbi tempor tincidunt tempor. Etiam id turpis viverra, vulputate sapien nec, varius sem. Curabitur
+							ullamcorper fringilla eleifend. In ut eros hendrerit est consequat posuere et at velit.</p>
+            </div>
+        </div>
+    </div>
     <!-- Customer overview end -->
 </div>
 <script>$('#file').change(function(){
@@ -197,7 +189,11 @@
     border-bottom: 0 solid rgba(0, 0, 0, 0.125);
     display: inline-block;
 }
+.text_1 {
+    display:inline-block;
+}
 .download {
+    {#display: inline-block;#}
     float: right;
 }
 input[type="file"] {
