@@ -176,11 +176,11 @@
     </div>
     <!-- Customer overview end -->
 </div>
-<script>$('#file').change(function(){
-    var name = $(this).val;
-    $(this).text(name);
-})
-</script>
+{#<script>$('#file').change(function(){#}
+{#    var name = $(this).val;#}
+{#    $(this).text(name);#}
+{#})#}
+{#</script>#}
 <style>
 .card-header2 {
     padding: 25px 25px;
@@ -210,10 +210,18 @@ input[type="file"]:focus::file-selector-button {
 
 input[type="file"]::before {
   top: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 250px;
 }
 
 input[type="file"]::after {
   top: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 250px;
 }
 
 /* ------- From Step 2 ------- */
@@ -223,7 +231,7 @@ input[type="file"] {
 }
 
 input[type="file"]::file-selector-button {
-  width: 136px;
+  width: 45px;
   color: transparent;
 }
 
@@ -234,7 +242,7 @@ input[type="file"]::before {
   /*   top: 11px; */
   left: 40px;
   color: #0964b0;
-  content: "Upload File";
+  {#content: "Загрузить";#}
 }
 
 input[type="file"]::after {
