@@ -13,3 +13,4 @@ env
 *.xlsx
 .env
 /db.sqlite3
+/.venv
