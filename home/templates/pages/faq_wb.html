@@ -1,0 +1,23 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+<!-- [ Main Content ] start -->
+<div class="col-sm-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>Wildberries</h4>
+            </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">Suspendisse vel quam malesuada, aliquet sem sit amet, fringilla elit. Morbi tempor tincidunt tempor. Etiam id turpis viverra, vulputate sapien nec, varius sem. Curabitur
+							ullamcorper fringilla eleifend. In ut eros hendrerit est consequat posuere et at velit.</p>
+            </div>
+        </div>
+    </div>
+<!-- [ Main Content ] end -->
+{% endblock content %}
+{% block extrajs %}
+<!-- custom-chart js -->
+<script src="{% static 'assets/js/pages/dashboard-main.js' %}"></script>
+<!-- Apex Chart -->
+<script src="{% static 'assets/js/plugins/apexcharts.min.js' %}"></script>
+{% endblock extrajs %}

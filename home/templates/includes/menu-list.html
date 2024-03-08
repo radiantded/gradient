@@ -5,12 +5,20 @@
   </li>
   <li class="nav-item">
     <a href="{% url 'index' %}" class="nav-link "><span class="pcoded-micon"><i
-          class="feather icon-home"></i></span><span class="pcoded-mtext">Озон</span></a>
+          class="feather icon-home"></i></span><span class="pcoded-mtext">Ozon</span></a>
   </li>
 
     <li class="nav-item">
     <a href="{% url 'yandex' %}" class="nav-link "><span class="pcoded-micon"><i
           class="feather icon-layers"></i></span><span class="pcoded-mtext">Яндекс</span></a>
+  <li class="nav-item pcoded-hasmenu">
+    <a href="#" class="nav-link "><span class="pcoded-micon"><i class="feather icon-help-circle"></i></span><span
+        class="pcoded-mtext">FAQ</span></a>
+    <ul class="pcoded-submenu">
+      <li><a href="{% url 'faq_ozon' %}" >Ozon</a></li>
+      <li><a href="{% url 'faq_yandex' %}" >Яндекс</a></li>
+      <li><a href="{% url 'faq_wb' %}" >Wildberries</a></li>
+    </ul>
   </li>
 
   {% if not request.user.is_authenticated %}

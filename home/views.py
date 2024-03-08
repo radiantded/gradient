@@ -26,7 +26,6 @@ def index(request):
         table = dataframe.values.tolist()[:5]
         table = round_values(table, to_int=False)
         abc = round_values(abc.values.tolist())
-
         context = {
             "data": abc,
             "table": table,
@@ -76,6 +75,22 @@ def yandex_index(request):
             "file_name": file_name,
         }
     return render(request, 'pages/index.html', context=context)
+
+
+@login_required(login_url='/accounts/auth-signin/')
+def faq_ozon(request):
+    return render(request, 'pages/faq_ozon.html')
+
+
+@login_required(login_url='/accounts/auth-signin/')
+def faq_yandex(request):
+    return render(request, 'pages/faq_yandex.html')
+
+
+@login_required(login_url='/accounts/auth-signin/')
+def faq_wb(request):
+    return render(request, 'pages/faq_wb.html')
+
 
 def download(request, file_name):
     try:
