@@ -2,6 +2,7 @@ import pandas
 import pandas as pd
 from pretty_html_table import pretty_html_table
 
+
 def assign_kassa(row):
     BIB_SKU = ['KAR-014V1', 'AB-840122', 'ABBK4006P1LW', 'ABBK1439C6L', 'ABBK1439C8L', 'ABBK1013DP1L', 'ABBK1465PB',
                'ABBK4006P1L', 'ABBK4006P1LB', 'ABBK1492PS', 'ABBK1492PSB']
@@ -35,6 +36,7 @@ def assign_kassa(row):
         return 'RBK'
     else:
         return 'Unknown'
+
 
 def ozon(file, file_2, period):
     data = pd.read_excel(file)  # загружаем файл начислений
@@ -345,4 +347,107 @@ def yandex(united, mp_services, netting, sebes, period):
         "purchase": ZAKUPKA
     }
     print(blocks)
+    return dashboard_data, blocks, dataframe_1
+
+
+def wildberries(main, hran, reklama, sebes):
+    data = pd.read_excel(main)
+    sebes = pd.read_excel(sebes)
+    reklama = int(reklama)
+    hran = int(hran)
+    data['Артикул поставщика'] = data['Артикул поставщика'].str.upper()
+
+    data = (data.fillna(0))
+    data = data.fillna('')
+
+    max_date = data['Дата продажи'].max()
+    min_date = data['Дата продажи'].min()
+    data['summa log sale'] = data['К перечислению Продавцу за реализованный Товар'] + (
+                data['Услуги по доставке товара покупателю'] * -1)
+
+    data_perevozka = data[
+        (data['Обоснование для оплаты'] == 'Возмещение издержек по перевозке')]
+    vozmeshenie_perevozok = data_perevozka['Возмещение издержек по перевозке'].sum()
+    data_brak = data[
+        (data['Обоснование для оплаты'] == 'Частичная компенсация брака') | (
+                    data['Обоснование для оплаты'] == 'Авансовая оплата за товар без движения')]
+    vozmeshenie_brak = data_brak['К перечислению Продавцу за реализованный Товар'].sum()
+    data_PROD_s_vozvratami = data[(data['Тип документа'] != '') & (data['Обоснование для оплаты'] == 'логистика') | (
+                data['Обоснование для оплаты'] == 'продажа')]
+    data_vozvrat = data[
+        (data['Тип документа'] == 'возврат')]
+    data_vozvrat['summa log sale'] = data_vozvrat['summa log sale'] * -1
+    data_VOZV = data_PROD_s_vozvratami.loc[
+        data_PROD_s_vozvratami['Виды логистики, штрафов и доплат'] == 'Возврат брака (К продавцу)']
+
+    data_VOZV_1 = data_PROD_s_vozvratami.loc[data_PROD_s_vozvratami['Количество возврата'] > 0]
+    data_VOZV_2 = data_PROD_s_vozvratami.loc[
+        data_PROD_s_vozvratami['Виды логистики, штрафов и доплат'] == 'К клиенту при отмене']
+    df_VOZV = pd.concat([
+        data_vozvrat,
+        data_VOZV,
+        data_VOZV_1,
+        data_VOZV_2
+    ])
+    vozv_kolvo = df_VOZV
+    df_VOZV = df_VOZV.groupby(['Артикул поставщика'])['summa log sale', 'Кол-во'].sum().reset_index()
+    vozv_kolvo = vozv_kolvo.groupby(['ШК'])['summa log sale'].sum().reset_index()
+    data_PROD = data_PROD_s_vozvratami.loc[data_PROD_s_vozvratami['Количество возврата'] < 1]
+    data_PROD = data_PROD.loc[data_PROD['Виды логистики, штрафов и доплат'] != 'Возврат брака (К продавцу)']
+    data_PROD = data_PROD.loc[data_PROD['Виды логистики, штрафов и доплат'] != 'К клиенту при отмене']
+    data_PRODAGA = data_PROD.groupby(['ШК', 'Артикул поставщика', 'Дата продажи', 'Название'])[
+        'summa log sale', 'Кол-во'].sum().reset_index()
+    data_PRODAGA = data_PRODAGA.merge(sebes, on='Артикул поставщика')
+    data_PRODAGA['reklama'] = reklama / data_PRODAGA['summa log sale'].sum()
+    data_PRODAGA['Возмещение'] = (vozmeshenie_perevozok + vozmeshenie_brak) / data_PRODAGA['summa log sale'].sum()
+    data_PRODAGA['хранение'] = hran / (data_PRODAGA['summa log sale'].sum())
+    data_PRODAGA['возвраты'] = (df_VOZV['summa log sale'].sum()) / (data_PRODAGA['summa log sale'].sum())
+    data_PRODAGA['total'] = data_PRODAGA['summa log sale'] + (
+                data_PRODAGA['Возмещение'] * data_PRODAGA['summa log sale']) - (
+                                        data_PRODAGA['хранение'] * data_PRODAGA['summa log sale']) - (
+                                        data_PRODAGA['reklama'] * data_PRODAGA['summa log sale']) + (
+                                        data_PRODAGA['возвраты'] * data_PRODAGA['summa log sale'])
+    df_concat = data_PRODAGA
+    df_concat['Дата транзакции'] = max_date
+    df_concat = df_concat.dropna()
+    dataframe = df_concat[['Артикул поставщика', 'Дата транзакции', 'Кол-во', 'summa log sale', 'total', 'zakupka']]
+
+    dataframe['Налог'] = (dataframe['total'] * 0.07)
+
+    dataframe['Прибыль'] = dataframe['total'] - dataframe['Налог'] - (dataframe['zakupka'] * dataframe['Кол-во'])
+    dataframe['Маркетплейс'] = 'WB'
+
+    dataframe = dataframe.rename(
+        columns={'Артикул поставщика': 'SKU', 'summa log sale': 'К перечислению', 'total': 'Выручка',
+                 'zakupka': 'Закупка'})
+    dataframe['Прибыль за шт.'] = dataframe['Прибыль'] / dataframe['Кол-во']
+    dataframe_1 = dataframe[
+        ['SKU', 'Дата транзакции', 'Кол-во', 'К перечислению', 'Выручка', 'Закупка', 'Налог', 'Прибыль', 'Маркетплейс',
+         'Прибыль за шт.']]
+    # ВЕРХНИЕ БЛОКИ МЕТРИК
+    kolvo_zakazov = df_concat['Кол-во'].sum()
+    kolvo_vozvrat = len(vozv_kolvo)
+    viruchka = df_concat['total'].sum()
+    EBITDA = dataframe_1['Прибыль'].sum()
+    ZAKUPKA = dataframe_1['Закупка'].sum()
+
+    # НИЖНИЙ БЛОК ABC АНАЛИЗА
+    dataset = dataframe
+    dashboard_data = dataset.groupby(['SKU'])[
+        'К перечислению', 'Кол-во', 'Выручка', 'Закупка', 'Прибыль'].sum().reset_index()
+    dashboard_data['ROI'] = round((dashboard_data['Прибыль'] / dashboard_data['Закупка']) * 100, 2)
+    ROI = round(EBITDA / ZAKUPKA * 100, 2)
+    dashboard_data = dashboard_data.sort_values(by='Прибыль', ascending=False)
+    dashboard_data = dashboard_data.rename(columns={'К перечислению': 'Продажи', 'Прибыль': 'EBITDA'})
+
+    blocks = {
+        "orders": kolvo_zakazov,
+        "revenue": viruchka,
+        "returns": kolvo_vozvrat,
+        "profit": EBITDA,
+        "roi": ROI,
+        "purchase": ZAKUPKA
+    }
+    print(blocks)
+
     return dashboard_data, blocks, dataframe_1

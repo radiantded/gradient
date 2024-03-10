@@ -85,6 +85,18 @@
                         {% endfor %}
                         <button type="submit" class="btn">Рассчитать</button>
                     </form>
+                {% elif wb %}
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% for field in wb %}
+                            <h6><label><b>{{ field.label }}</b></label></h6>
+                            <div class="custom-file">{{ field }}</div>
+                            <br>
+                        {% endfor %}
+                        <br>
+                        <button type="submit" class="btn">Рассчитать</button>
+                    </form>    
                 {% endif %}
                 
             </div>

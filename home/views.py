@@ -4,8 +4,8 @@ from django.http import FileResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from home.forms import OzonForm, YandexForm
-from home.utils import ozon, round_values, yandex
+from home.forms import OzonForm, YandexForm, WildberriesForm
+from home.utils import ozon, round_values, yandex, wildberries
 
 
 @login_required(login_url='/accounts/auth-signin/')
@@ -19,9 +19,10 @@ def index(request):
             file_2 = request.FILES['file_2']
             ozon_form = OzonForm(request.FILES)
             abc, blocks, dataframe = ozon(file_1, file_2, period)
-        except:
-            return render(request, 'pages/index.html')
-        file_name = f"data-{int(datetime.timestamp(datetime.now()))}.xlsx"
+        except Exception as ex:
+            print(ex)
+            return render(request, 'pages/index.html', context=context)
+        file_name = f"ozon-{int(datetime.timestamp(datetime.now()))}.xlsx"
         dataframe.to_excel(f"media/{file_name}")
         table = dataframe.values.tolist()[:5]
         table = round_values(table, to_int=False)
@@ -54,9 +55,10 @@ def yandex_index(request):
             yandex_form = YandexForm(request.POST, request.FILES)
             period = request.POST.get("period")
             abc, blocks, dataframe = yandex(united, mp_services, netting, sebes, period)
-        except:
-            return render(request, 'pages/index.html')
-        file_name = f"data-{int(datetime.timestamp(datetime.now()))}.xlsx"
+        except Exception as ex:
+            print(ex)
+            return render(request, 'pages/index.html', context=context)
+        file_name = f"yandex-{int(datetime.timestamp(datetime.now()))}.xlsx"
         dataframe.to_excel(f"media/{file_name}")
         table = dataframe.values.tolist()[:6]
         table = round_values(table, to_int=False)
@@ -75,6 +77,43 @@ def yandex_index(request):
             "file_name": file_name,
         }
     return render(request, 'pages/index.html', context=context)
+
+
+login_required(login_url='/accounts/auth-signin/')
+def wb_index(request):
+    wb_form = WildberriesForm()
+    context = {"wb": wb_form}
+    if request.method == 'POST' and request.FILES:
+        try:
+            main = request.FILES['main']
+            hran = request.POST['hran']
+            reklama = request.POST['reklama']
+            sebes = request.FILES['sebes']
+            wb_form = WildberriesForm(request.POST, request.FILES)
+            abc, blocks, dataframe = wildberries(main, hran, reklama, sebes)
+        except Exception as ex:
+            print(ex)
+            return render(request, 'pages/index.html', context=context)
+        file_name = f"wb-{int(datetime.timestamp(datetime.now()))}.xlsx"
+        dataframe.to_excel(f"media/{file_name}")
+        table = dataframe.values.tolist()[:5]
+        table = round_values(table, to_int=False)
+        abc = round_values(abc.values.tolist())
+
+        context = {
+            "data": abc,
+            "table": table,
+            "orders": round(blocks["orders"]),
+            "revenue": round(blocks["revenue"]),
+            "roi": round(blocks["roi"]),
+            "returns": round(blocks["returns"]),
+            "profit": round(blocks["profit"]),
+            "purchase": round(blocks["purchase"]),
+            "wb": wb_form,
+            "file_name": file_name,
+        }
+    return render(request, 'pages/index.html', context=context)
+
 
 
 @login_required(login_url='/accounts/auth-signin/')

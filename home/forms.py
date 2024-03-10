@@ -20,3 +20,10 @@ class YandexForm(forms.Form):
             }
         )
     )
+
+
+class WildberriesForm(forms.Form):
+    main = forms.FileField(label="main")
+    hran = forms.IntegerField(label="hran")
+    reklama = forms.IntegerField(label="reklama")
+    sebes = forms.FileField(label="sebes")
