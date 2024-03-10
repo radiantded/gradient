@@ -5,12 +5,33 @@
 <div class="col-sm-8">
         <div class="card">
             <div class="card-header">
-                <h4>Яндекс</h4>
+                <h4>Формирование и загрузка файлов для расчета отчета Yandex Market</h4>
             </div>
                 <div class="card-body">
-                    <p class="text-muted mb-4">Suspendisse vel quam malesuada, aliquet sem sit amet, fringilla elit. Morbi tempor tincidunt tempor. Etiam id turpis viverra, vulputate sapien nec, varius sem. Curabitur
-							ullamcorper fringilla eleifend. In ut eros hendrerit est consequat posuere et at velit.</p>
-            </div>
+                    <p>Требуемые файлы и их структура:</p>
+<p>1. Файл <strong>sebes.xlsx</strong> - это эксель файл из двух столбцов, названия которых приведены ниже:</p>
+<ul>
+<li><strong>Артикул поставщика</strong> - первый столбец, где должны быть прописаны артикулы ваших товаров. Они должны совпадать с теми, что фигурируют в отчете начислений.</li>
+<li><strong>zakupka</strong> - второй столбец файла, где проставлены цены себестоимости товаров.</li>
+</ul>
+<p><img src="https://i.ibb.co/SJ400qG/Screenshot-4.png" alt="" width="400" height="141" /></p>
+<p>&nbsp;</p>
+<p>2. <strong>Три файла начислений из личного кабинета YANDEX MARKET</strong></p>
+<p>Заходите в личный кабинет Yandex Market:</p>
+<ul>
+<li>файлы&nbsp;<strong>united</strong> и <strong>netting</strong> - это файлы начисления всех доставок и оплат бонусами. Скачиваем отсюда БУХГАЛТЕРИЯ - ФИНАНСОВЫЕ ОТЧЕТЫ - ПО ПЛАТЕЖНОМУ ПОРУЧЕНИЮ - ВЫБИРАЕМ ДАТУ НАЧИСЛЕНИЯ - ФОРМИРУЕМ ОБА ОТЧЕТА</li>
+</ul>
+<p>Здесь главное не перепутать: файл <strong>netting</strong> это бонусы - открыли скачанные файлы и выбрали тот, в котором сумма начисления меньше, это и есть оплаты бонусами. Второй файл это уже реальные продажи, его называем <strong>united</strong>.</p>
+<p><img src="https://i.ibb.co/9Wm5CwB/Screenshot-6.png" alt="" width="700" height="405" /></p>
+<ul>
+<li>файл <strong>marketplace_services_financial_month </strong>это полный перечень удержаний по услугам за выбранный период, в нашем случае формируем по месяцу. Скачиваем тут&nbsp;БУХГАЛТЕРИЯ - ФИНАНСОВЫЕ ОТЧЕТЫ - ПО СТОИМОСТИ УСЛУГ - ПО ДАТЕ ФОРМИРОВАНИЯ АКТА. Выбираем нужный месяц и нажимаем Сформировать отчет. Этот файл без изменений загружаем к нам на сайт в&nbsp;поле <strong>mp_services</strong></li>
+</ul>
+<p><strong><img src="https://i.ibb.co/FKPTxQD/Screenshot-5.png" alt="" width="700" height="442" /></strong></p>
+<p><span style="color: #ff0000;">В итоге загружаем 4 файла, файл продаж в united, файл бонусов в netting, себестоимсть в sebes и файл услуг в mp_services.</span></p>
+<p><span style="color: #000000;">Поле PERIOD это та дата, которая вам удобна в своем учете. Мы рекомендуем выставлять ту дату, за которую вам перевели деньги. К примеру, Яндекс переводит деньги за отчетный период в начале следующего месяца за отчетным, поэтому если в начале марта вы получили деньги за февраль, то дату лучше всего ставить 28.02.2024.</span></p>
+<p><span style="color: #ff0000;"><em><img src="https://i.ibb.co/gwTG2rC/Screenshot-7.png" alt="" width="177" height="300" /></em></span></p>
+<p>Нажимаем "Расчитать" и ждем заполнение всех метрик и таблиц, также будет доступна таблица ABC анализа товаров. Таблица продаж по товарам выводится первыми тремя строками для ознакомления, полную таблицу можно выгрузить, нажав "Экспортировать XLSX".</p>
+<p>&nbsp;</p>
         </div>
     </div>
 <!-- [ Main Content ] end -->
