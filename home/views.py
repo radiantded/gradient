@@ -79,7 +79,7 @@ def yandex_index(request):
     return render(request, 'pages/index.html', context=context)
 
 
-login_required(login_url='/accounts/auth-signin/')
+@login_required(login_url='/accounts/auth-signin/')
 def wb_index(request):
     wb_form = WildberriesForm()
     context = {"wb": wb_form}

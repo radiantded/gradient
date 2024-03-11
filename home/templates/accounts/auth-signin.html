@@ -26,12 +26,12 @@
 							</div>
 							<small class="text-danger">{{ field.errors }}</small>
        						 {% endfor %}
-							<div class="form-group text-left mt-2">
-								<div class="checkbox checkbox-primary d-inline">
-									<input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-a1" checked="">
-									<label for="checkbox-fill-a1" class="cr"> Сохранить данные</label>
-								</div>
-							</div>
+{#							<div class="form-group text-left mt-2">#}
+{#								<div class="checkbox checkbox-primary d-inline">#}
+{#									<input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-a1" checked="">#}
+{#									<label for="checkbox-fill-a1" class="cr"> Сохранить данные</label>#}
+{#								</div>#}
+{#							</div>#}
 							<button class="btn btn-block btn-primary mt-2 mb-4">Вход</button>
 							<p class="mb-2 text-muted">Забыли пароль? <a href="{% url 'forgot_password' %}" class="f-w-400">Восстановить</a></p>
 							<p class="mb-0 text-muted">Нет аккаунта? <a href="{% url 'auth_signup' %}" class="f-w-400">Регистрация</a></p>
