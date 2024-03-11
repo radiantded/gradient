@@ -355,7 +355,7 @@ def wildberries(main, hran, reklama, sebes):
     sebes = pd.read_excel(sebes)
     reklama = int(reklama)
     hran = int(hran)
-    data['Артикул поставщика'] = data['Артикул поставщика'].str.upper()
+    # data['Артикул поставщика'] = data['Артикул поставщика'].str.upper()
 
     data = (data.fillna(0))
     data = data.fillna('')
