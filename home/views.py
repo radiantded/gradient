@@ -92,9 +92,9 @@ def yandex_index(request, mode):
             yandex_form = YandexForm(request.POST, request.FILES)
             period = request.POST.get("period")
             if mode == 'now':
-                abc, blocks, dataframe = yandex_now(united, mp_services, netting, sebes, period)
-            else:
                 abc, blocks, dataframe = yandex_later(united, mp_services, netting, sebes, period)
+            else:
+                abc, blocks, dataframe = yandex_now(united, mp_services, netting, sebes, period)
         except Exception as ex:
             print(ex)
             return render(request, 'pages/index.html', context=context)
