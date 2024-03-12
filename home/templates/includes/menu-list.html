@@ -8,10 +8,14 @@
           class="feather icon-home"></i></span><span class="pcoded-mtext">Ozon</span></a>
   </li>
 
-    <li class="nav-item">
-    <a href="{% url 'yandex' %}" class="nav-link "><span class="pcoded-micon"><i
-          class="feather icon-layers"></i></span><span class="pcoded-mtext">Яндекс</span></a>
-    </li>
+    <li class="nav-item pcoded-hasmenu">
+    <a href="#" class="nav-link "><span class="pcoded-micon"><i class="feather icon-help-circle"></i></span><span
+        class="pcoded-mtext">Яндекс</span></a>
+    <ul class="pcoded-submenu">
+      <li><a href="{% url 'yandex' mode='now' %}" >Сразу</a></li>
+      <li><a href="{% url 'yandex' mode='later' %}" >Позже</a></li>
+    </ul>
+  </li>
     <li class="nav-item">
     <a href="{% url 'wb' %}" class="nav-link "><span class="pcoded-micon"><i
           class="feather icon-codepen"></i></span><span class="pcoded-mtext">Wildberries</span></a>

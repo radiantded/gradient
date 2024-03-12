@@ -171,7 +171,7 @@ def round_values(values, to_int=True):
     return table_result
 
 
-def yandex(united, mp_services, netting, sebes, period):
+def yandex_now(united, mp_services, netting, sebes, period):
 
     sebes = pd.read_excel(sebes)
     data_bonus = pd.read_excel(netting, sheet_name='Отчёт о платежном поручении', skiprows=1)
@@ -338,6 +338,121 @@ def yandex(united, mp_services, netting, sebes, period):
     dashboard_data = dashboard_data.sort_values(by='Прибыль', ascending=False)
     dashboard_data = dashboard_data.rename(columns={'К перечислению': 'Продажи', 'Прибыль': 'EBITDA'})
 
+    blocks = {
+        "orders": kolvo_zakazov,
+        "revenue": viruchka,
+        "returns": kolvo_vozvrat,
+        "profit": EBITDA,
+        "roi": ROI,
+        "purchase": ZAKUPKA
+    }
+    print(blocks)
+    return dashboard_data, blocks, dataframe_1
+
+
+def yandex_later(united, mp_services, netting, sebes, period):
+    file_data = pd.read_excel(united, sheet_name='Отчёт о платежном поручении', skiprows=1)
+    sebes = pd.read_excel(sebes)
+
+    data_bonus = pd.read_excel(netting, sheet_name='Отчёт о платежном поручении', skiprows=1)
+    data_bonus = data_bonus.loc[data_bonus['Тип заказа'] == 'Продажа физлицу']
+    data_bonus = data_bonus[['Номер заказа', 'Количество', 'Сумма транзакции, руб.']]
+    data_bonus = data_bonus.groupby(['Номер заказа']).sum()
+
+    vozvrat = file_data
+    vozvrat = vozvrat.loc[vozvrat['Источник транзакции'] == 'Возврат платежа покупателя']
+    vozvrat = vozvrat[['Номер заказа', 'Ваш SKU', 'Количество', 'Сумма транзакции, руб.']]
+    vozvrat = vozvrat.rename(columns={'Номер заказа': 'Заказ'})
+    vozvrat = vozvrat.reset_index(drop=True)
+
+    data_tranzact = file_data
+    index_first_empty_row = \
+    data_tranzact['ID бизнес-аккаунта'].index[data_tranzact['ID бизнес-аккаунта'].isnull()].tolist()[0]
+    data_tranzact = data_tranzact.iloc[:index_first_empty_row]
+
+    data_tranzact = data_tranzact[
+        ['Модели работы', 'Названия магазинов', 'Номер заказа', 'Ваш SKU', 'Название товара', 'Количество',
+         'Сумма транзакции, руб.', 'Дата транзакции']]
+    data_tranzact = data_tranzact.fillna(0)
+    data_tranzact = data_tranzact.sort_values(by=['Номер заказа'], ascending=True)
+    dashboard_tranzact = data_tranzact.loc[(data_tranzact['Количество'] > 0)]
+    dashboard_tranzact = pd.merge(dashboard_tranzact, data_bonus, on=['Номер заказа'], how='left')
+    dashboard_tranzact = dashboard_tranzact.fillna(0)
+    dashboard_tranzact['tranz'] = dashboard_tranzact['Сумма транзакции, руб._x'] + dashboard_tranzact[
+        'Сумма транзакции, руб._y']
+    dashboard_tranzact = dashboard_tranzact[['Номер заказа', 'tranz']]
+    dashboard_tranzact = dashboard_tranzact.groupby(['Номер заказа'])['tranz'].sum().reset_index()
+
+    data_tranzact = data_tranzact.groupby(['Номер заказа', 'Ваш SKU'])[
+        'Количество', 'Сумма транзакции, руб.'].sum().reset_index()
+
+    dostavka = pd.merge(data_tranzact, data_bonus, on=['Номер заказа'], how='left')
+    dostavka = dostavka.fillna(0)
+    dostavka['цена за шт'] = (dostavka['Сумма транзакции, руб._x'] + dostavka['Сумма транзакции, руб._y']) / dostavka[
+        'Количество_x']
+    dostavka['Итого платеж'] = dostavka['цена за шт'] * dostavka['Количество_x']
+    dostavki = dostavka.loc[(dostavka['Количество_x'] > 0)]
+    dostavki = dostavki[~dostavki['Номер заказа'].isin(vozvrat['Заказ'])]
+
+    vozv_tranzact = data_tranzact[data_tranzact['Номер заказа'].isin(vozvrat['Заказ'])]
+    vozv_tranzact = vozv_tranzact.rename(columns={'Номер заказа': 'Заказ'})
+    vozv = pd.concat([
+        vozv_tranzact,
+        vozvrat
+    ])
+    vozv = vozv.groupby(['Заказ', 'Ваш SKU'])['Количество', 'Сумма транзакции, руб.'].sum().reset_index()
+    uslugi = dostavka.loc[(dostavka['Количество_x'] == 0)]
+    uslugi = uslugi[['Номер заказа', 'Ваш SKU', 'Количество_x', 'Сумма транзакции, руб._x']]
+    uslugi = uslugi.rename(columns={'Номер заказа': 'Заказ', 'Количество_x': 'Количество',
+                                    'Сумма транзакции, руб._x': 'Сумма транзакции, руб.'})
+    DOP_uslugi = pd.concat([
+        vozv,
+        uslugi
+    ])
+
+    udergania = file_data
+    i = udergania[udergania.isin(['Название услуги к удержанию']).any(axis=1)].reset_index()
+    x = i.iloc[0]['index']
+    df = udergania.drop(index=udergania.index[:x])
+    df = df.iloc[1:, :]
+    M = df['Сумма транзакции, руб.'].sum()
+    N = DOP_uslugi['Сумма транзакции, руб.'].sum()
+
+    dostavki = pd.merge(dostavki, dashboard_tranzact, on=['Номер заказа'], how='left')
+    dostavki['total'] = dostavki['Итого платеж'] + ((M + N) / (dostavki['Количество_x'].sum()))
+    df_concat = dostavki
+    df_concat['zakupka'] = df_concat['Ваш SKU'].map(sebes.set_index('Артикул поставщика')['zakupka'])
+    df_concat['Дата транзакции'] = period
+    df_concat = df_concat.dropna()
+    dataframe = df_concat[['Ваш SKU', 'Дата транзакции', 'Количество_x', 'tranz', 'total', 'zakupka']]
+    dataframe['Налог'] = (dataframe['total'] * 0.07)
+
+    dataframe['Прибыль'] = dataframe['total'] - dataframe['Налог'] - (dataframe['zakupka'] * dataframe['Количество_x'])
+    dataframe['Маркетплейс'] = 'YM'
+
+    dataframe = dataframe.rename(
+        columns={'Ваш SKU': 'SKU', 'tranz': 'К перечислению', 'total': 'Выручка', 'zakupka': 'Закупка',
+                 'Количество_x': 'Кол-во'})
+    dataframe['Прибыль за шт.'] = dataframe['Прибыль'] / dataframe['Кол-во']
+    dataframe_1 = dataframe[
+        ['SKU', 'Дата транзакции', 'Кол-во', 'К перечислению', 'Выручка', 'Закупка', 'Налог', 'Прибыль', 'Маркетплейс',
+         'Прибыль за шт.']]
+    # ВЕРХНИЕ БЛОКИ МЕТРИК
+    kolvo_zakazov = len(df_concat)
+    kolvo_vozvrat = vozvrat['Количество'].sum()
+    kolvo_tovarov = dataframe['Кол-во'].sum()
+    viruchka = df_concat['total'].sum()
+    EBITDA = dataframe_1['Прибыль'].sum()
+    ZAKUPKA = dataframe_1['Закупка'].sum()
+
+    # НИЖНИЙ БЛОК ABC АНАЛИЗА
+    dataset = dataframe
+    dashboard_data = dataset.groupby(['SKU'])[
+        'К перечислению', 'Кол-во', 'Выручка', 'Закупка', 'Прибыль'].sum().reset_index()
+    dashboard_data['ROI'] = round((dashboard_data['Прибыль'] / dashboard_data['Закупка']) * 100, 2)
+    ROI = round(EBITDA / ZAKUPKA * 100, 2)
+    dashboard_data = dashboard_data.sort_values(by='Прибыль', ascending=False)
+    dashboard_data = dashboard_data.rename(columns={'К перечислению': 'Продажи', 'Прибыль': 'EBITDA'})
     blocks = {
         "orders": kolvo_zakazov,
         "revenue": viruchka,
