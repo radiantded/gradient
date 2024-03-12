@@ -5,11 +5,11 @@
   </li>
   <li class="nav-item">
     <a href="{% url 'index' %}" class="nav-link "><span class="pcoded-micon"><i
-          class="feather icon-home"></i></span><span class="pcoded-mtext">Ozon</span></a>
+          class="oz-icon"></i></span><span class="pcoded-mtext">Ozon</span></a>
   </li>
 
     <li class="nav-item pcoded-hasmenu">
-    <a href="#" class="nav-link "><span class="pcoded-micon"><i class="feather icon-help-circle"></i></span><span
+    <a href="#" class="nav-link "><span class="pcoded-micon"><i class="ya-icon"></i></span><span
         class="pcoded-mtext">Яндекс</span></a>
     <ul class="pcoded-submenu">
       <li><a href="{% url 'yandex' mode='now' %}" >Взаимозачёт "Сразу"</a></li>
@@ -18,7 +18,7 @@
   </li>
     <li class="nav-item">
     <a href="{% url 'wb' %}" class="nav-link "><span class="pcoded-micon"><i
-          class="feather icon-codepen"></i></span><span class="pcoded-mtext">Wildberries</span></a>
+          class="wb-icon"></i></span><span class="pcoded-mtext">Wildberries</span></a>
     </li>
   <li class="nav-item pcoded-hasmenu">
     <a href="#" class="nav-link "><span class="pcoded-micon"><i class="feather icon-help-circle"></i></span><span
@@ -74,7 +74,32 @@
   {% endfor %}
   {% endif %}
 
-
+<style>
+.ya-icon
+{
+   background:url(static/scanwise/icons/ya.png) left top;
+   width:24px;
+   height:24px;
+   display: block;
+   float: left;
+}
+.wb-icon
+{
+   background:url(static/scanwise/icons/wb.png) left top;
+   width:24px;
+   height:24px;
+   display: block;
+   float: left;
+}
+.oz-icon
+{
+   background:url(static/scanwise/icons/oz.png) left top;
+   width:24px;
+   height:24px;
+   display: block;
+   float: left;
+}
+</style>
 {#  {% if request.user.is_authenticated and request.user.is_superuser %}#}
 {#  <li class="nav-item pcoded-menu-caption">#}
 {#    <label>UI Element</label>#}
