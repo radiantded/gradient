@@ -8,7 +8,7 @@ from home.forms import OzonForm, YandexForm, WildberriesForm
 from home.utils import ozon, round_values, yandex_now, wildberries, yandex_later
 
 
-# @login_required(login_url='/accounts/auth-signin/')
+@login_required(login_url='/accounts/auth-signin/')
 def index(request):
     ozon_form = OzonForm()
     context = {"ozon": ozon_form}
@@ -43,7 +43,7 @@ def index(request):
 
 
 
-# @login_required(login_url='/accounts/auth-signin/')
+@login_required(login_url='/accounts/auth-signin/')
 def yandex_index(request, mode):
     yandex_form = YandexForm()
     context = {"yandex": yandex_form}
