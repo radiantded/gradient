@@ -10,7 +10,7 @@ class OzonForm(forms.Form):
 class YandexForm(forms.Form):
     united = forms.FileField(label="united")
     mp_services = forms.FileField(label="mp_services")
-    netting = forms.FileField(label="netting")
+    united_netting = forms.FileField(label="united_netting")
     sebes = forms.FileField(label="sebes")
     period = forms.DateField(
         label="period", widget=NumberInput(

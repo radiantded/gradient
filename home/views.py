@@ -8,7 +8,7 @@ from home.forms import OzonForm, YandexForm, WildberriesForm
 from home.utils import ozon, round_values, yandex_now, wildberries, yandex_later
 
 
-@login_required(login_url='/accounts/auth-signin/')
+# @login_required(login_url='/accounts/auth-signin/')
 def index(request):
     ozon_form = OzonForm()
     context = {"ozon": ozon_form}
@@ -42,44 +42,8 @@ def index(request):
     return render(request, 'pages/index.html', context=context)
 
 
-@login_required(login_url='/accounts/auth-signin/')
-def yandex_index(request):
-    yandex_form = YandexForm()
-    context = {"yandex": yandex_form}
-    if request.method == 'POST' and request.FILES:
-        try:
-            united = request.FILES['united']
-            mp_services = request.FILES['mp_services']
-            netting = request.FILES['netting']
-            sebes = request.FILES['sebes']
-            yandex_form = YandexForm(request.POST, request.FILES)
-            period = request.POST.get("period")
-            abc, blocks, dataframe = yandex_now(united, mp_services, netting, sebes, period)
-        except Exception as ex:
-            print(ex)
-            return render(request, 'pages/index.html', context=context)
-        file_name = f"yandex-{int(datetime.timestamp(datetime.now()))}.xlsx"
-        dataframe.to_excel(f"media/{file_name}")
-        table = dataframe.values.tolist()[:6]
-        table = round_values(table, to_int=False)
-        abc = round_values(abc.values.tolist())
 
-        context = {
-            "data": abc,
-            "table": table,
-            "orders": round(blocks["orders"]),
-            "revenue": round(blocks["revenue"]),
-            "roi": round(blocks["roi"]),
-            "returns": round(blocks["returns"]),
-            "profit": round(blocks["profit"]),
-            "purchase": round(blocks["purchase"]),
-            "yandex": yandex_form,
-            "file_name": file_name,
-        }
-    return render(request, 'pages/index.html', context=context)
-
-
-@login_required(login_url='/accounts/auth-signin/')
+# @login_required(login_url='/accounts/auth-signin/')
 def yandex_index(request, mode):
     yandex_form = YandexForm()
     context = {"yandex": yandex_form}
@@ -87,14 +51,14 @@ def yandex_index(request, mode):
         try:
             united = request.FILES['united']
             mp_services = request.FILES['mp_services']
-            netting = request.FILES['netting']
+            united_netting = request.FILES['united_netting']
             sebes = request.FILES['sebes']
             yandex_form = YandexForm(request.POST, request.FILES)
             period = request.POST.get("period")
             if mode == 'now':
-                abc, blocks, dataframe = yandex_later(united, mp_services, netting, sebes, period)
+                abc, blocks, dataframe = yandex_now(united, mp_services, united_netting, sebes, period)
             else:
-                abc, blocks, dataframe = yandex_now(united, mp_services, netting, sebes, period)
+                abc, blocks, dataframe = yandex_later(united, mp_services, united_netting, sebes, period)
         except Exception as ex:
             print(ex)
             return render(request, 'pages/index.html', context=context)

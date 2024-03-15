@@ -171,10 +171,10 @@ def round_values(values, to_int=True):
     return table_result
 
 
-def yandex_now(united, mp_services, netting, sebes, period):
+def yandex_now(united, mp_services, united_netting, sebes, period):
 
     sebes = pd.read_excel(sebes)
-    data_bonus = pd.read_excel(netting, sheet_name='Отчёт о платежном поручении', skiprows=1)
+    data_bonus = pd.read_excel(united_netting, sheet_name='Отчёт о платежном поручении', skiprows=1)
 
     # data_bonus = data_bonus.loc[data_bonus['Источник транзакции'] == ('Платёж за скидку по баллам Яндекс Плюса'  'Платёж за скидку маркетплейса')]
     data_bonus = data_bonus.loc[data_bonus['Тип заказа'] == 'Продажа физлицу']
@@ -350,9 +350,9 @@ def yandex_now(united, mp_services, netting, sebes, period):
     return dashboard_data, blocks, dataframe_1
 
 
-def yandex_later(united, mp_services, netting, sebes, period):
+def yandex_later(united, mp_services, united_netting, sebes, period):
     sebes = pd.read_excel(sebes)
-    data_bonus = pd.read_excel(netting, sheet_name='Отчёт о платежном поручении', skiprows=1)
+    data_bonus = pd.read_excel(united_netting, sheet_name='Отчёт о платежном поручении', skiprows=1)
     # data_bonus = data_bonus.loc[data_bonus['Источник транзакции'] == ('Платёж за скидку по баллам Яндекс Плюса'  'Платёж за скидку маркетплейса')]
     data_bonus = data_bonus.loc[data_bonus['Тип заказа'] == 'Продажа физлицу']
     # data_bonus = data_bonus[['Модели работы','Названия магазинов','Номер заказа','Ваш SKU','Название товара','Количество','Сумма транзакции, руб.','Дата транзакции']]
