@@ -351,88 +351,150 @@ def yandex_now(united, mp_services, netting, sebes, period):
 
 
 def yandex_later(united, mp_services, netting, sebes, period):
-    file_data = pd.read_excel(united, sheet_name='Отчёт о платежном поручении', skiprows=1)
     sebes = pd.read_excel(sebes)
-
     data_bonus = pd.read_excel(netting, sheet_name='Отчёт о платежном поручении', skiprows=1)
+    # data_bonus = data_bonus.loc[data_bonus['Источник транзакции'] == ('Платёж за скидку по баллам Яндекс Плюса'  'Платёж за скидку маркетплейса')]
     data_bonus = data_bonus.loc[data_bonus['Тип заказа'] == 'Продажа физлицу']
-    data_bonus = data_bonus[['Номер заказа', 'Количество', 'Сумма транзакции, руб.']]
+    # data_bonus = data_bonus[['Модели работы','Названия магазинов','Номер заказа','Ваш SKU','Название товара','Количество','Сумма транзакции, руб.','Дата транзакции']]
+    data_bonus = data_bonus[['Номер заказа', 'Количество', 'Сумма транзакции, ₽']]
     data_bonus = data_bonus.groupby(['Номер заказа']).sum()
-
-    vozvrat = file_data
+    data_bonus = data_bonus.loc[data_bonus['Сумма транзакции, ₽'] != 0]
+    vozvrat = pd.read_excel(united, sheet_name='Отчёт о платежном поручении', skiprows=1)
     vozvrat = vozvrat.loc[vozvrat['Источник транзакции'] == 'Возврат платежа покупателя']
-    vozvrat = vozvrat[['Номер заказа', 'Ваш SKU', 'Количество', 'Сумма транзакции, руб.']]
+    vozvrat = vozvrat[['Номер заказа', 'Ваш SKU', 'Количество', 'Сумма транзакции, ₽']]
     vozvrat = vozvrat.rename(columns={'Номер заказа': 'Заказ'})
     vozvrat = vozvrat.reset_index(drop=True)
+    list_vozv = vozvrat['Заказ'].tolist()
 
-    data_tranzact = file_data
-    index_first_empty_row = \
-    data_tranzact['ID бизнес-аккаунта'].index[data_tranzact['ID бизнес-аккаунта'].isnull()].tolist()[0]
-    data_tranzact = data_tranzact.iloc[:index_first_empty_row]
-
+    data_tranzact = pd.read_excel(united, sheet_name='Отчёт о платежном поручении', skiprows=1)
+    data_tranzact = data_tranzact.loc[(data_tranzact['Источник транзакции'] == 'Платёж покупателя')]
     data_tranzact = data_tranzact[
         ['Модели работы', 'Названия магазинов', 'Номер заказа', 'Ваш SKU', 'Название товара', 'Количество',
-         'Сумма транзакции, руб.', 'Дата транзакции']]
-    data_tranzact = data_tranzact.fillna(0)
+         'Сумма транзакции, ₽', 'Дата транзакции']]
     data_tranzact = data_tranzact.sort_values(by=['Номер заказа'], ascending=True)
-    dashboard_tranzact = data_tranzact.loc[(data_tranzact['Количество'] > 0)]
-    dashboard_tranzact = pd.merge(dashboard_tranzact, data_bonus, on=['Номер заказа'], how='left')
-    dashboard_tranzact = dashboard_tranzact.fillna(0)
-    dashboard_tranzact['tranz'] = dashboard_tranzact['Сумма транзакции, руб._x'] + dashboard_tranzact[
-        'Сумма транзакции, руб._y']
-    dashboard_tranzact = dashboard_tranzact[['Номер заказа', 'tranz']]
-    dashboard_tranzact = dashboard_tranzact.groupby(['Номер заказа'])['tranz'].sum().reset_index()
-
-    data_tranzact = data_tranzact.groupby(['Номер заказа', 'Ваш SKU'])[
-        'Количество', 'Сумма транзакции, руб.'].sum().reset_index()
+    data_tranzact = data_tranzact.fillna(0)
+    data_tranzact = data_tranzact.loc[~data_tranzact['Номер заказа'].isin(list_vozv)]
+    data_tranzact = data_tranzact.reset_index(drop=True)
 
     dostavka = pd.merge(data_tranzact, data_bonus, on=['Номер заказа'], how='left')
     dostavka = dostavka.fillna(0)
-    dostavka['цена за шт'] = (dostavka['Сумма транзакции, руб._x'] + dostavka['Сумма транзакции, руб._y']) / dostavka[
+    dostavka['цена за шт'] = (dostavka['Сумма транзакции, ₽_x'] + dostavka['Сумма транзакции, ₽_y']) / dostavka[
         'Количество_x']
     dostavka['Итого платеж'] = dostavka['цена за шт'] * dostavka['Количество_x']
-    dostavki = dostavka.loc[(dostavka['Количество_x'] > 0)]
-    dostavki = dostavki[~dostavki['Номер заказа'].isin(vozvrat['Заказ'])]
+    list_dostavka = dostavka['Номер заказа']
 
-    vozv_tranzact = data_tranzact[data_tranzact['Номер заказа'].isin(vozvrat['Заказ'])]
-    vozv_tranzact = vozv_tranzact.rename(columns={'Номер заказа': 'Заказ'})
-    vozv = pd.concat([
-        vozv_tranzact,
-        vozvrat
-    ])
-    vozv = vozv.groupby(['Заказ', 'Ваш SKU'])['Количество', 'Сумма транзакции, руб.'].sum().reset_index()
-    uslugi = dostavka.loc[(dostavka['Количество_x'] == 0)]
-    uslugi = uslugi[['Номер заказа', 'Ваш SKU', 'Количество_x', 'Сумма транзакции, руб._x']]
-    uslugi = uslugi.rename(columns={'Номер заказа': 'Заказ', 'Количество_x': 'Количество',
-                                    'Сумма транзакции, руб._x': 'Сумма транзакции, руб.'})
-    DOP_uslugi = pd.concat([
-        vozv,
-        uslugi
-    ])
+    dostavka['Дата транзакции'] = pd.to_datetime(dostavka['Дата транзакции'], infer_datetime_format=True)
+    max_date = dostavka['Дата транзакции'].max()
+    min_date = dostavka['Дата транзакции'].min()
+    max_date = max_date.date()
+    min_date = min_date.date()
+    max_date = max_date.strftime('%d/%m/%y')
+    min_date = min_date.strftime('%d/%m/%y')
+    
+    data_vitrina = pd.read_excel(mp_services,
+                                 sheet_name='Размещение товаров на витрине', skiprows=4)
+    data_vitrina = data_vitrina.drop(index=[0, 1])
+    data_reklama = pd.read_excel(mp_services, sheet_name='Буст продаж', skiprows=1)
+    data_dostavka = pd.read_excel(mp_services, sheet_name='Доставка покупателю',
+                                  skiprows=1)
+    data_eqva = pd.read_excel(mp_services, sheet_name='Перевод платежа', skiprows=1)
+    data_obrabotka = pd.read_excel(mp_services,
+                                   sheet_name='Обработка заказов в СЦ или ПВЗ', skiprows=1)
+    data_hranenie = pd.read_excel(mp_services,
+                                  sheet_name='Хранение невыкупов и возвратов', skiprows=1)
+    data_loyal = pd.read_excel(mp_services, sheet_name='Программа лояльности и отзывы',
+                               skiprows=1)
+    data_dostavka = data_dostavka[
+        ['Модели работы', 'Названия магазинов', 'Номер заказа', 'Ваш SKU', 'Количество, шт.', 'Стоимость услуги, ₽']]
+    data_vitrina = data_vitrina[['Модели работы', 'Названия магазинов', 'Номер заказа', 'Ваш SKU', 'Количество, шт.',
+                                 'Стоимость услуги (гр.46=гр. 34-гр.36+гр.41+гр.43-гр.44-гр.45), ₽']]
+    data_reklama = data_reklama[
+        ['Модели работы', 'Названия магазинов', 'Номер заказа', 'Ваш SKU', 'Количество, шт.', 'Постоплата, ₽']]
+    data_loyal = data_loyal[
+        ['Модели работы', 'Названия магазинов', 'Номер заказа', 'Ваш SKU', 'Количество, шт.', 'Стоимость услуги, ₽']]
+    data_reklama = data_reklama.rename(columns={'Постоплата, руб.': 'Стоимость услуги, ₽'})
+    data_eqva = data_eqva[
+        ['Модели работы', 'Названия магазинов', 'Номер заказа', 'Ваш SKU', 'Тариф на перевод, % от оплаченной суммы',
+         'Стоимость услуги, ₽']]
+    data_eqva = data_eqva.rename(columns={'Тариф на перевод, % от оплаченной суммы': 'Количество, шт.'})
+    data_obrabotka = data_obrabotka[['Номер заказа', 'Тариф за заказ или отправление, ₽']]
+    data_dostavka_group = data_dostavka.groupby(['Номер заказа', 'Ваш SKU'])['Стоимость услуги, ₽'].sum().reset_index()
 
-    udergania = file_data
-    i = udergania[udergania.isin(['Название услуги к удержанию']).any(axis=1)].reset_index()
-    x = i.iloc[0]['index']
-    df = udergania.drop(index=udergania.index[:x])
-    df = df.iloc[1:, :]
-    M = df['Сумма транзакции, руб.'].sum()
-    N = DOP_uslugi['Сумма транзакции, руб.'].sum()
+    data_vitrina = data_vitrina.rename(
+        columns={'Стоимость услуги (гр.46=гр. 34-гр.36+гр.41+гр.43-гр.44-гр.45), ₽': 'Стоимость услуги, ₽'})
+    
+    df_dostavka = data_dostavka.loc[data_dostavka['Номер заказа'].isin(list_dostavka)]
+    df_dostavka = df_dostavka.groupby(['Номер заказа', 'Ваш SKU'])[
+        'Количество, шт.', 'Стоимость услуги, ₽'].sum().reset_index()
+    df_vitrina = (data_vitrina.loc[data_vitrina['Номер заказа'].isin(list_dostavka)]).reset_index(drop=True)
+    df_reklama = (data_reklama.loc[data_reklama['Номер заказа'].isin(list_dostavka)]).reset_index(drop=True)
+    df_loyal = (data_loyal.loc[data_loyal['Номер заказа'].isin(list_dostavka)]).reset_index(drop=True)
+    df_eqva = (data_eqva.loc[data_eqva['Номер заказа'].isin(list_dostavka)]).reset_index(drop=True)
+    df_obrabotka = (data_obrabotka.loc[data_obrabotka['Номер заказа'].isin(list_dostavka)]).reset_index(drop=True)
 
-    dostavki = pd.merge(dostavki, dashboard_tranzact, on=['Номер заказа'], how='left')
-    dostavki['total'] = dostavki['Итого платеж'] + ((M + N) / (dostavki['Количество_x'].sum()))
-    df_concat = dostavki
+    dostavka = dostavka.rename(
+        columns={'Ваш SKU': 'SKU', 'Количество_y': 'Кол-во бонусы', 'Сумма транзакции, ₽_y': 'Платеж бонусами',
+                 'Количество_x': 'Кол-во', 'Сумма транзакции, ₽_x': 'Платеж'})
+    unit = dostavka.merge(df_dostavka, left_on='Номер заказа', right_on='Номер заказа', how='outer')
+    unit.rename(columns={'Стоимость услуги, ₽': 'Доставка'}, inplace=True)
+    unit = unit.merge(df_vitrina, left_on='Номер заказа', right_on='Номер заказа', how='outer')
+    unit.rename(columns={'Стоимость услуги, ₽': 'Витрина'}, inplace=True)
+    unit = unit.merge(df_reklama, left_on='Номер заказа', right_on='Номер заказа', how='outer')
+    unit.rename(columns={'Постоплата, ₽': 'Реклама'}, inplace=True)
+    unit = unit.merge(df_loyal, left_on='Номер заказа', right_on='Номер заказа', how='outer')
+    unit.rename(columns={'Стоимость услуги, ₽': 'Лояльность'}, inplace=True)
+    unit = unit.merge(df_eqva, left_on='Номер заказа', right_on='Номер заказа', how='outer')
+    unit.rename(columns={'Стоимость услуги, ₽': 'Эквайринг'}, inplace=True)
+    unit = unit.merge(df_obrabotka, left_on='Номер заказа', right_on='Номер заказа', how='outer')
+    unit.rename(columns={'Тариф за заказ или отправление, ₽': 'Обработка'}, inplace=True)
+    unit = unit.fillna(0)
+    unit = unit.drop(
+        ['Модели работы', 'Названия магазинов', 'Количество, шт.', 'Ваш SKU', 'Модели работы_x', 'Названия магазинов_x',
+         'Ваш SKU_y', 'Количество, шт._x', 'Модели работы_y', 'Названия магазинов_y', 'Количество, шт._y', 'Ваш SKU_x'],
+        axis=1)
+    unit['Итоговый Перевод'] = unit['Итого платеж'] - unit['Доставка'] - unit['Витрина'] - unit['Лояльность'] - unit[
+        'Обработка'] - unit['Реклама'] - unit['Эквайринг']
+
+    no_dostavka = data_dostavka.loc[~data_dostavka['Номер заказа'].isin(list_dostavka)]
+    no_dostavka = no_dostavka.groupby(['Номер заказа', 'Ваш SKU'])[
+        'Количество, шт.', 'Стоимость услуги, ₽'].sum().reset_index()
+    no_dostavka = no_dostavka[['Ваш SKU', 'Стоимость услуги, ₽']]
+    no_vitrina = data_vitrina.loc[~data_vitrina['Номер заказа'].isin(list_dostavka)]
+    no_vitrina = no_vitrina[['Ваш SKU', 'Стоимость услуги, ₽']]
+    no_reklama = data_reklama.loc[~data_reklama['Номер заказа'].isin(list_dostavka)]
+    no_reklama = no_reklama[['Ваш SKU', 'Постоплата, ₽']]
+    no_loyal = data_loyal.loc[~data_loyal['Номер заказа'].isin(list_dostavka)]
+    no_loyal = no_loyal[['Ваш SKU', 'Стоимость услуги, ₽']]
+    no_eqva = data_eqva.loc[~data_eqva['Номер заказа'].isin(list_dostavka)]
+    no_eqva = no_eqva[['Ваш SKU', 'Стоимость услуги, ₽']]
+    no_obrabotka = data_obrabotka.loc[~data_obrabotka['Номер заказа'].isin(list_dostavka)]
+    no_obrabotka = no_obrabotka[['Номер заказа', 'Тариф за заказ или отправление, ₽']]
+
+    no_sales_costs = pd.concat([no_dostavka, no_vitrina, no_reklama, no_loyal, no_eqva]).reset_index()
+    
+    unit = unit.rename(columns={'SKU': 'Ваш SKU'})
+
+    unit['Обработка %'] = no_obrabotka['Тариф за заказ или отправление, ₽'].sum() / unit['Итоговый Перевод'].sum()
+    unit['Хранение общее %'] = data_hranenie['Стоимость услуги, ₽'].sum() / unit['Итоговый Перевод'].sum()
+    unit['Иные расходы, %'] = no_sales_costs['Стоимость услуги, ₽'].sum() / unit['Итоговый Перевод'].sum()
+    unit['Итого'] = unit['Итоговый Перевод'] - (unit['Обработка %'] * unit['Итоговый Перевод']) - (
+                unit['Иные расходы, %'] * unit['Итоговый Перевод']) - (
+                                unit['Хранение общее %'] * unit['Итоговый Перевод'])
+
+    
+    df_concat = unit
     df_concat['zakupka'] = df_concat['Ваш SKU'].map(sebes.set_index('Артикул поставщика')['zakupka'])
     df_concat['Дата транзакции'] = period
     df_concat = df_concat.dropna()
-    dataframe = df_concat[['Ваш SKU', 'Дата транзакции', 'Количество_x', 'tranz', 'total', 'zakupka']]
-    dataframe['Налог'] = (dataframe['total'] * 0.07)
+    dataframe = df_concat[['Ваш SKU', 'Дата транзакции', 'Кол-во', 'Итого платеж', 'Итого', 'zakupka']]
 
-    dataframe['Прибыль'] = dataframe['total'] - dataframe['Налог'] - (dataframe['zakupka'] * dataframe['Количество_x'])
+    dataframe['Налог'] = (dataframe['Итого'] * 0.07)
+
+    dataframe['Прибыль'] = dataframe['Итого'] - dataframe['Налог'] - (dataframe['zakupka'] * dataframe['Кол-во'])
     dataframe['Маркетплейс'] = 'YM'
 
     dataframe = dataframe.rename(
-        columns={'Ваш SKU': 'SKU', 'tranz': 'К перечислению', 'total': 'Выручка', 'zakupka': 'Закупка',
-                 'Количество_x': 'Кол-во'})
+        columns={'Ваш SKU': 'SKU', 'Итого платеж': 'К перечислению', 'Итого': 'Выручка', 'zakupka': 'Закупка'})
     dataframe['Прибыль за шт.'] = dataframe['Прибыль'] / dataframe['Кол-во']
     dataframe_1 = dataframe[
         ['SKU', 'Дата транзакции', 'Кол-во', 'К перечислению', 'Выручка', 'Закупка', 'Налог', 'Прибыль', 'Маркетплейс',
@@ -441,7 +503,7 @@ def yandex_later(united, mp_services, netting, sebes, period):
     kolvo_zakazov = len(df_concat)
     kolvo_vozvrat = vozvrat['Количество'].sum()
     kolvo_tovarov = dataframe['Кол-во'].sum()
-    viruchka = df_concat['total'].sum()
+    viruchka = df_concat['Итого'].sum()
     EBITDA = dataframe_1['Прибыль'].sum()
     ZAKUPKA = dataframe_1['Закупка'].sum()
 
