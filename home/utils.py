@@ -544,7 +544,7 @@ def wildberries(main, hran, reklama, sebes):
 
     data_perevozka = data[
         (data['Обоснование для оплаты'] == 'Возмещение издержек по перевозке')]
-    vozmeshenie_perevozok = data_perevozka['Возмещение издержек по перевозке'].sum()
+    vozmeshenie_perevozok = data_perevozka['Возмещение издержек по перевозке/по складским операциям с товаром'].sum()
     data_brak = data[
         (data['Обоснование для оплаты'] == 'Частичная компенсация брака') | (
                     data['Обоснование для оплаты'] == 'Авансовая оплата за товар без движения')]
